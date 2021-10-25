@@ -139,6 +139,9 @@ STATIC_URL = '/static/'
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
+OMDB_KEY = 'a430f7d3'
+OMDB_LINK = 'https://www.omdbapi.com/?'
+
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 LOGGING = {

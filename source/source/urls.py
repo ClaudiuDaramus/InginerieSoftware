@@ -21,6 +21,7 @@ urlpatterns = [
     # we make direct link between baseMaster app and site
     url(r'^main/', include('baseMaster.urls')),
     url(r'^auth/', include('authentication.urls')),
+    url(r'^movie/', include('movieAPI.urls')),
     url(r'^admin/', admin.site.urls),
     url('api-token-auth/', views.obtain_auth_token),
 ]
