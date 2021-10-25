@@ -14,13 +14,12 @@ Including another URLconf
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
 from django.conf.urls import url, include
-from django.contrib import admin
 from rest_framework.authtoken import views
+from .views import register, dummyView, login
 
 urlpatterns = [
-    # we make direct link between baseMaster app and site
-    url(r'^main/', include('baseMaster.urls')),
-    url(r'^auth/', include('authentication.urls')),
-    url(r'^admin/', admin.site.urls),
-    url('api-token-auth/', views.obtain_auth_token),
+    url('api-token-auth/', views.obtain_auth_token, name='auth'),
+    url('register/', register, name='register'),
+    url('dummy/', dummyView, name='dummy'),
+    url('login/', login, name='login')
 ]
