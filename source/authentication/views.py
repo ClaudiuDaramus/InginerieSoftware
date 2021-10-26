@@ -67,7 +67,7 @@ def login(request):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def dummyView(request):
-    return JsonResponse({'good': 'u see this'})
+    return JsonResponse({'good': 'u see this','user': UserSerializer.getJsonVariant(request.user)})
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
@@ -161,6 +161,18 @@ def getFakeList(request):
             response, seed = getPersonList(int(listSize), gender=gender)
 
         response = filterPersons(response)
+
+        # create fake users and add to db
+        for person in response:
+            serializedUser = UserSerializer(data=person)
+            if serializedUser.is_valid():
+                try:
+                    user = serializedUser.create(validated_data=serializedUser.validated_data)
+                except Exception as e:
+                    return JsonResponse({'error': e.args})
+            else:
+                return JsonResponse({'error': serializedUser.errors})
+
         return JsonResponse({'results': response, 'seed': seed, 'error': None})
     except Exception as e:
         return JsonResponse({'error': e})

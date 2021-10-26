@@ -49,8 +49,8 @@ def filterPersons(personList):
             location = person['location']
             newPersonList.append({
                 'gender': person['gender'],
-                'first name': person['name']['first'],
-                'last name': person['name']['last'],
+                'first_name': person['name']['first'],
+                'last_name': person['name']['last'],
                 'title': person['name']['title'],
                 'street': location['street']['name'] + str(location['street']['number']),
                 'city': location['city'],

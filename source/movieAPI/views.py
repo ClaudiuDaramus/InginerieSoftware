@@ -54,7 +54,7 @@ def findMovieView(request):
     # there is an error here i think idk what to do
     try:
         search = searchForVideoContent(imdbId, title)
-        # search = formatResponseForInterest(search)
+        search = formatResponseForInterest(search)
         return JsonResponse({'results': search})
     except Exception as e:
         return JsonResponse({'error': str(e)})
