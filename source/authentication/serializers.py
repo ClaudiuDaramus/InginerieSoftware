@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
-
+from .models import Profile
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -18,6 +18,8 @@ class UserSerializer(serializers.ModelSerializer):
         instance.first_name = validated_data.get('first_name', instance.first_name)
         instance.last_name = validated_data.get('last_name', instance.last_name)
         instance.password = validated_data.get('password', instance.password)
+        instance.save()
+        return instance
 
     @staticmethod
     def getJsonVariant(instance):
@@ -28,4 +30,27 @@ class UserSerializer(serializers.ModelSerializer):
             'last name': instance.last_name,
             'complete name': instance.get_full_name(),
             'password': instance.password
+        }
+
+# when we add history for the profile we need to update the serializer
+class ProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Profile
+        fields = ('profileName', )
+
+    def create(self, validated_data):
+        profile = Profile.objects.create(**validated_data)
+        return profile
+
+    def update(self, instance, validated_data):
+        instance.profileName = validated_data.get('profileName', instance.profileName)
+        instance.save()
+        return instance
+
+    @staticmethod
+    def getJsonVariant(instance):
+        return {
+            'profile name': instance.profileName,
+            'user id': instance.user.pk,
+            'creation date': instance.creationDate,
         }
