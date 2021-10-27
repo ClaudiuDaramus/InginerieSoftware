@@ -1,3 +1,4 @@
+import rest_framework.decorators
 from django.shortcuts import render
 
 # Create your views here.
@@ -26,8 +27,11 @@ from django.contrib.auth.decorators import login_required
 
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework.renderers import BrowsableAPIRenderer
+from rest_framework.decorators import renderer_classes
 from rest_framework import generics
 from rest_framework import mixins
+from rest_framework.settings import api_settings
 
 from rest_framework import status
 
@@ -37,6 +41,39 @@ from django.contrib.auth.models import User
 from .serializers import UserSerializer, ProfileSerializer
 from .models import Profile
 from .userManager import getPersonList, filterPersons
+
+
+# TODO make some endpoint as GET for simple testing
+# TODO use renderer_classes to use rendered response by drf
+# TODO create a swagger by using drf renderer and making an automation for endpointsDescription
+
+class UserRegisterView(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+
+        getDict = request.GET
+
+        getDict = {
+            "username": getDict.get('username'),
+            "email": getDict.get('email'),
+            "last_name": getDict.get('last name'),
+            "first_name": getDict.get('first name'),
+            "password": getDict.get('password')
+        }
+
+        serializedUser = UserSerializer(data=getDict)
+        if serializedUser.is_valid():
+            user = serializedUser.create(validated_data=serializedUser.validated_data)
+            token, created = Token.objects.get_or_create(user=user)
+
+            response = Response({'user': serializedUser.getJsonVariant(user), 'token': token.key},
+                                status=status.HTTP_200_OK)
+            response.set_cookie('auth_token', token.key)
+            return response
+        else:
+            return Response({'error': serializedUser.errors}, status=status.HTTP_400_BAD_REQUEST)
+
 
 @api_view(['POST'])
 @permission_classes([AllowAny])
@@ -54,20 +91,23 @@ def register(request):
     else:
         return JsonResponse({'error': serializedUser.errors})
 
+
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def login(request):
-
     user = User.objects.filter(username=request.data['username']).first()
     token, created = Token.objects.get_or_create(user=user)
     response = JsonResponse({'user': UserSerializer.getJsonVariant(user), 'token': token.key})
     response.set_cookie('auth_token', token.key)
     return response
 
+
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
+# @renderer_classes([JSONRenderer])
 def dummyView(request):
-    return JsonResponse({'good': 'u see this','user': UserSerializer.getJsonVariant(request.user)})
+    return JsonResponse({'good': 'u see this', 'user': UserSerializer.getJsonVariant(request.user)})
+
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
@@ -95,6 +135,7 @@ def createNewProfile(request):
     else:
         return JsonResponse({'error': profileSerializer.errors})
 
+
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def getAllProfiles(request):
@@ -103,6 +144,7 @@ def getAllProfiles(request):
     for profile in profiles:
         newProfileList.append(ProfileSerializer.getJsonVariant(profile))
     return JsonResponse({'results': newProfileList, 'number of profiles': len(profiles), 'error': None})
+
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
@@ -147,6 +189,7 @@ def deleteProfile(request):
 
     return JsonResponse({'result': profileJson, 'error': None})
 
+
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def getFakeList(request):
@@ -173,6 +216,22 @@ def getFakeList(request):
             else:
                 return JsonResponse({'error': serializedUser.errors})
 
-        return JsonResponse({'results': response, 'seed': seed, 'error': None})
+        return JsonResponse({'result': response, 'seed': seed, 'error': None})
     except Exception as e:
         return JsonResponse({'error': e})
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def getUserLocation(request):
+    ip = request.GET.get('ip')
+    response = requests.get('http://ipwhois.app/json/%s' % ip)
+
+    if response.status_code == 200:
+        response = response.json()
+        if response['success'] is False:
+            return JsonResponse({'error': response['message']})
+        else:
+            return JsonResponse({'result': response})
+    else:
+        return JsonResponse({'error': 'The server returned %s' % response.status_code})

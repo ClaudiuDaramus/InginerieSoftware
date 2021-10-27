@@ -35,8 +35,9 @@ And we have the following utilities:
 > A new component must be added in the source folder, in settings at **INSTALLED_APPS**
 >
 > Also, you must import all urls from an app to source urls by using **import('appName.urls')** 
- 3. Everytime you make a view, make sure it is added in the urls.py file
- 4. If you update a model, make sure you execute **python manage.py makemigrations** and **python manage.py migrate**
+3. To save the required libraries for the project, use **pip freeze > requirements.txt**
+3. Everytime you make a view, make sure it is added in the urls.py file
+4. If you update a model, make sure you execute **python manage.py makemigrations** and **python manage.py migrate**
 > For evey model made, you need to create a serializer
 > If you want to see the models in the admin interface do the following steps:
 >> 1. **from django.contrib import admin**
