@@ -42,7 +42,9 @@ INSTALLED_APPS = [
     'movieAPI',
     'musicAPI',
     'teleGridAPI',
-    'authentication'
+    'authentication',
+    'mapsAPI',
+    'activitiesAPI'
 ]
 
 MIDDLEWARE = [
@@ -112,6 +114,11 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.TokenAuthentication',
         'authentication.auth.TokenAuthSupportCookie'
+    ],
+    'DEFAULT_RENDERER_CLASSES': [
+        'rest_framework.renderers.BrowsableAPIRenderer',
+        'rest_framework.renderers.JSONRenderer',
+
     ]
 }
 

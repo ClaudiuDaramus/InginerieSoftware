@@ -15,10 +15,12 @@ Including another URLconf
 """
 from django.conf.urls import url
 from rest_framework.authtoken import views
-from .views import register, dummyView, login, createNewProfile, getAllProfiles, updateProfile, deleteProfile, getFakeList
+from .views import register, dummyView, login, createNewProfile, getAllProfiles, updateProfile, deleteProfile, \
+    getFakeList, getUserLocation, UserRegisterView
 
 urlpatterns = [
     url('api-token-auth/', views.obtain_auth_token, name='auth'),
+    url('view/register/', UserRegisterView.as_view(), name='register-view'),
     url('register/', register, name='register'),
     url('dummy/', dummyView, name='dummy'),
     url('login/', login, name='login'),
@@ -26,5 +28,6 @@ urlpatterns = [
     url('get/profiles/', getAllProfiles, name='get-profiles'),
     url('update/profile/', updateProfile, name='update-profile'),
     url('delete/profile/', deleteProfile, name='delete-profile'),
-    url('get/fakes/', getFakeList, name='get-fake-persons')
+    url('get/fakes/', getFakeList, name='get-fake-persons'),
+    url('location/', getUserLocation, name='get-location'),
 ]
