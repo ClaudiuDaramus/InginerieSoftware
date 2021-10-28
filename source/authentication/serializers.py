@@ -5,7 +5,8 @@ from .models import Profile
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('id', 'username', 'email', 'last_name', 'first_name', 'password')
+        fields = ('username', 'email', 'last_name', 'first_name', 'password')
+        fieldsNormalized = ('username', 'email', 'last name', 'first name', 'password')
 
     def create(self, validated_data):
         print(validated_data)
@@ -37,6 +38,7 @@ class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = Profile
         fields = ('profileName', )
+        fieldsNormalized = ('profile name', )
 
     def create(self, validated_data):
         profile = Profile.objects.create(**validated_data)
