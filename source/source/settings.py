@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework.authtoken',
+    'rest_framework',
     'baseMaster',
     'movieAPI',
     'musicAPI',
@@ -115,11 +116,6 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.TokenAuthentication',
         'authentication.auth.TokenAuthSupportCookie'
     ],
-    'DEFAULT_RENDERER_CLASSES': [
-        'rest_framework.renderers.BrowsableAPIRenderer',
-        'rest_framework.renderers.JSONRenderer',
-
-    ]
 }
 
 

@@ -14,18 +14,22 @@ Including another URLconf
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
 from django.conf.urls import url
+from django.urls import include, path
 from rest_framework.authtoken import views
-from .views import register, dummyView, login, createNewProfile, getAllProfiles, updateProfile, deleteProfile, \
-    getFakeList, getUserLocation, UserRegisterView
+
+from .views.views import dummyView, getFakeList, getUserLocation
+
+from .views.userViews import UserLoginView, UserRegisterView
+from .views.profileViews import createNewProfile, getProfiles, updateProfile, deleteProfile
 
 urlpatterns = [
     url('api-token-auth/', views.obtain_auth_token, name='auth'),
-    url('view/register/', UserRegisterView.as_view(), name='register-view'),
-    url('register/', register, name='register'),
+    url('register/', UserRegisterView.as_view(), name='register'),
     url('dummy/', dummyView, name='dummy'),
-    url('login/', login, name='login'),
+    url('login/', UserLoginView.as_view(), name='login'),
     url('create/profile/', createNewProfile, name='create-profile'),
-    url('get/profiles/', getAllProfiles, name='get-profiles'),
+    path('get/profiles/<slug:name>', getProfiles, name='get-profile'),
+    path('get/profiles/', getProfiles, name='get-profiles'),
     url('update/profile/', updateProfile, name='update-profile'),
     url('delete/profile/', deleteProfile, name='delete-profile'),
     url('get/fakes/', getFakeList, name='get-fake-persons'),
