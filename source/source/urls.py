@@ -26,4 +26,5 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url('api-token-auth/', views.obtain_auth_token),
     url(r'^auth/', include('authentication.urls')),
+    url(r'^tv-grid/', include('teleGridAPI.urls')),
 ]
