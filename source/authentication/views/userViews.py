@@ -115,9 +115,15 @@ class UserLoginView(APIExtended):
         return response
 
     def get(self, request):
-        data = super().getTransform(request)
-        return self.logInUser(data)
+        if request.user.id is not None:
+            return Response({'error': 'user is already logged in'})
+        else:
+            data = super().getTransform(request)
+            return self.logInUser(data)
 
     def post(self, request):
-        data = super().postTransform(request)
-        return self.logInUser(data)
+        if request.user.id is not None:
+            return Response({'error': 'user is already logged in'})
+        else:
+            data = super().postTransform(request)
+            return self.logInUser(data)

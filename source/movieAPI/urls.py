@@ -16,9 +16,11 @@ Including another URLconf
 from django.conf.urls import url, include
 from django.contrib import admin
 from rest_framework.authtoken import views
-from .views import searchForMovieView, findMovieView
+from .views import searchForMovieView, findMovieView, compareMoviesView, compareMovieListView
 
 urlpatterns = [
     url('search/', searchForMovieView, name='search'),
-    url('find/', findMovieView, name='find')
+    url('find/', findMovieView, name='find'),
+    url('compare/list/', compareMovieListView, name='compare list'),
+    url('compare/', compareMoviesView, name='compare'),
 ]
