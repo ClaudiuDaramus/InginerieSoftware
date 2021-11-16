@@ -39,7 +39,46 @@ from rest_framework.permissions import IsAdminUser, IsAuthenticated, AllowAny
 
 from authentication.serializers import UserSerializer, ProfileSerializer
 from authentication.models import Profile
-from source.helpers import optionHelper, getStringFromList, APIExtended
+from source.helpers import HelperFunctions, APIExtended
+from rest_framework.generics import GenericAPIView
+from rest_framework.mixins import CreateModelMixin, ListModelMixin, UpdateModelMixin, DestroyModelMixin, \
+    RetrieveModelMixin
+
+class ProfileView(ListModelMixin, APIExtended, CreateModelMixin):
+    permission_classes = (IsAuthenticated,)
+    # pagination_class = api_settings.DEFAULT_PAGINATION_CLASS
+    serializer_class = ProfileSerializer
+    queryset = Profile.objects.all()
+
+    def __init__(self, **kwargs):
+        ListModelMixin.__init__(self)
+        # GenericAPIView.__init__(self)
+        CreateModelMixin.__init__(self)
+        APIExtended.__init__(self, ProfileSerializer)
+
+        fieldsString = HelperFunctions.getStringFromList(self.fieldsNormalized, ', ')
+        self.parameters['description'] = 'This endpoint receives %s and login into an account' % fieldsString
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset().filter(user=request.user)
+        return Response(HelperFunctions.wrapResponse(results=[
+            ProfileSerializer.getJsonVariant(profileObject) for profileObject in queryset
+        ]))
+
+    def get(self, request):
+        return self.list(request)
+
+    def post(self, request):
+        return super(ProfileView, self).post(request)
+
+    def create(self, request, *args, **kwargs):
+        super().create(request)
+
+    # def post(self, request):
+    #     return self.create(request)
+    # You can define .get in here if you really need it.
+    # You can also override .list to add specific functionality
+
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
@@ -61,7 +100,8 @@ def createNewProfile(request):
         }
         try:
             profile = profileSerializer.create(validated_data=newProfileDict)
-            return Response({'profile': ProfileSerializer.getJsonVariant(profile), 'error': None}, status=status.HTTP_201_CREATED)
+            return Response({'profile': ProfileSerializer.getJsonVariant(profile), 'error': None},
+                            status=status.HTTP_201_CREATED)
         except Exception as e:
             return Response({'error': e.args}, status=status.HTTP_400_BAD_REQUEST)
     else:
@@ -77,14 +117,14 @@ def getProfiles(request, name=None):
     if name is not None:
         profile = profiles.filter(profileName=name).first()
         if profile is None:
-            response = {'error': 'There is no profile with this name'}
+            response = {'errors': 'There is no profile with this name'}
             return Response(response, status=status.HTTP_400_BAD_REQUEST)
 
         response = ProfileSerializer.getJsonVariant(profile)
-        return Response({'results': response, 'error': None}, status=status.HTTP_200_OK)
+        return Response({'results': response, 'errors': None}, status=status.HTTP_200_OK)
     else:
         profiles = [ProfileSerializer.getJsonVariant(profile) for profile in profiles]
-        response = {'results': newProfileList, 'number of profiles': len(profiles), 'error': None}
+        response = {'results': newProfileList, 'number of profiles': len(profiles), 'errors': None}
         return Response(response, status.HTTP_200_OK)
 
 
@@ -94,24 +134,24 @@ def updateProfile(request):
     newProfileName = request.GET.get('newProfileName')
     profileName = request.GET.get('profileName')
     if profileName is None or profileName == '':
-        return JsonResponse({'error': 'A profile name is needed to make the changed'})
+        return JsonResponse({'errors': 'A profile name is needed to make the changed'})
 
     if newProfileName is None or newProfileName == '':
-        return JsonResponse({'error': 'A new profile name is needed to make the change'})
+        return JsonResponse({'errors': 'A new profile name is needed to make the change'})
 
     profile = Profile.objects.filter(profileName=profileName).first()
     if profile is None:
-        return JsonResponse({'error': 'A profile with this name was not found'})
+        return JsonResponse({'errors': 'A profile with this name was not found'})
 
     serializedProfile = ProfileSerializer(data={'profileName': newProfileName})
     if serializedProfile.is_valid():
         try:
             updatedProfile = serializedProfile.update(profile, serializedProfile.validated_data)
-            return JsonResponse({'result': ProfileSerializer.getJsonVariant(updatedProfile), 'error': None})
+            return JsonResponse({'results': ProfileSerializer.getJsonVariant(updatedProfile), 'errors': None})
         except Exception as e:
-            return JsonResponse({'error': e.args})
+            return JsonResponse({'errors': e.args})
     else:
-        return JsonResponse({'error': serializedProfile.errors})
+        return JsonResponse({'errors': serializedProfile.errors})
 
 
 @api_view(['GET'])
@@ -120,13 +160,13 @@ def deleteProfile(request):
     profileName = request.GET.get('profileName')
 
     if profileName is None or profileName == '':
-        return JsonResponse({'error': 'A profile name is needed to make the delete'})
+        return JsonResponse({'errors': 'A profile name is needed to make the delete'})
 
     profile = Profile.objects.filter(profileName=profileName).first()
     if profile is None:
-        return JsonResponse({'error': 'A profile with this name was not found'})
+        return JsonResponse({'errors': 'A profile with this name was not found'})
 
     profileJson = ProfileSerializer.getJsonVariant(profile)
     profile.delete()
 
-    return JsonResponse({'result': profileJson, 'error': None})
+    return JsonResponse({'results': profileJson, 'error': None})

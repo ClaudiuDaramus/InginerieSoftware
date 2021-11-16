@@ -1,66 +1,47 @@
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.generics import GenericAPIView
+from rest_framework.mixins import CreateModelMixin
 from datetime import datetime
 
 
-def optionHelper(request, view, parameters):
-    meta = view.metadata_class()
-    data = meta.determine_metadata(request, view)
-    data.pop('renders')
-    data.pop('parses')
-    for key in parameters:
-        data[key] = parameters[key]
-    return data
+# def optionHelper(request, view, parameters):
+#     meta = view.metadata_class()
+#     data = meta.determine_metadata(request, view)
+#     data.pop('renders')
+#     data.pop('parses')
+#     for key in parameters:
+#         data[key] = parameters[key]
+#     return data
+#
 
-
-def getStringFromList(list, joiner=' '):
-    return joiner.join(list)
-
-class APIExtended(APIView):
-    def __init__(self, serializerClass, **kwargs):
-        super().__init__(**kwargs)
-
-        self.fields = serializerClass.Meta.fields
-        self.fieldsNormalized = serializerClass.Meta.fieldsNormalized
-        self.parameters = {}
-
-    def options(self, request, *args, **kwargs):
-        data = optionHelper(request, self, self.parameters)
-        return Response(data)
-
-    def getTransform(self, request):
-        getDict = {}
-        for fieldDB, fieldNormal in zip(self.fields, self.fieldsNormalized):
-            getDict[fieldDB] = request.GET.get(fieldNormal)
-        return getDict
-
-    def postTransform(self, request):
-        getDict = {}
-        for fieldDB, fieldNormal in zip(self.fields, self.fieldsNormalized):
-            getDict[fieldDB] = request.data.get(fieldNormal)
-        return getDict
-
+class HelperFunctions:
     # these are some generic functions that are useful in the filtering process
-    def stringOrNoneToFloat(self, stringField):
+    @staticmethod
+    def stringOrNoneToFloat(stringField):
         return float(stringField) if stringField is not None else 0
 
-    def stringToStringOrNone(self, stringField):
+    @staticmethod
+    def stringToStringOrNone(stringField):
         if stringField in [None, '', 'None']:
             return None
         else:
             return stringField
         # return stringField if stringField != '' and stringField is not None and stringField != 'None' else None
 
-    def stringOrNoneToStringList(self, stringField, splitter=','):
+    @staticmethod
+    def stringOrNoneToStringList(stringField, splitter=','):
         return stringField.split(splitter) if stringField is not None else None
 
-    def stringOrNoneToIntList(self, stringField, splitter=','):
+    @staticmethod
+    def stringOrNoneToIntList(stringField, splitter=','):
         if stringField is None:
             return None
 
         return [int(element) for element in stringField.split(splitter)]
 
-    def stringToDate(self, stringField, formatString='%Y-%m-%d %H:%M:%S'):
+    @staticmethod
+    def stringToDate(stringField, formatString='%Y-%m-%d %H:%M:%S'):
         stringDate = None
         try:
             stringDate = datetime.strptime(stringField, formatString)
@@ -72,7 +53,8 @@ class APIExtended(APIView):
         # "%Y-%B-%dT%H:%M:%S-%H:%M"
         # "2015-02-24T13:00:00-08:00"
 
-    def CSVtoJson(self, csvReader):
+    @staticmethod
+    def CSVtoJson(csvReader):
         header = None
         lines = []
         for row in csvReader:
@@ -88,3 +70,69 @@ class APIExtended(APIView):
                 dictObject[key] = value
             content.append(dictObject)
         return content
+
+    @staticmethod
+    def getStringFromList(list, joiner=' '):
+        return joiner.join(list)
+
+    @staticmethod
+    def isEmptyDict(dictCall):
+        return len(dictCall) == 0
+
+    @staticmethod
+    def wrapResponse(results=None, errors=None, info=None):
+        return {
+            'results': results,
+            'errors': errors,
+            'info': info,
+        }
+
+
+class APIExtended(GenericAPIView):
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        serializerClass = super().serializer_class
+
+        if serializerClass is None:
+            raise Exception('There is no serializer attached to this model')
+
+        self.fields = serializerClass.Meta.fields
+        self.fieldsNormalized = serializerClass.Meta.fieldsNormalized
+        self.parameters = {'model name': serializerClass.Meta.model.__name__,
+                           'description': 'This endpoint\'s model has these fields: %s' %
+                                          HelperFunctions.getStringFromList(self.fieldsNormalized, ', ')}
+
+    def options(self, request, *args, **kwargs):
+
+        meta = self.metadata_class()
+        data = meta.determine_metadata(request, self)
+        data.pop('renders')
+        data.pop('parses')
+        post = data.pop('POST')
+        get = data.pop('GET')
+
+        for key in self.parameters:
+            data[key] = self.parameters[key]
+
+        return Response(data)
+
+    def getRequestData(self, request):
+        getSize = len(request.GET)
+        postSize = len(request.data)
+
+        getRequestDict = {}
+
+        if getSize != 0:
+            getRequestDict = request.GET
+        elif postSize != 0:
+            getRequestDict = request.data
+        else:
+            return {}
+
+        getDict = {}
+        for fieldDB, fieldNormal in zip(self.fields, self.fieldsNormalized):
+            getDict[fieldDB] = getRequestDict.get(fieldNormal)
+
+        # print(getDict, request.GET, request.data)
+        return getDict

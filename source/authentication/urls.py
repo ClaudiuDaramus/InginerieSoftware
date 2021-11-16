@@ -20,13 +20,13 @@ from rest_framework.authtoken import views
 from .views.views import dummyView, getFakeList, getUserLocation
 
 from .views.userViews import UserLoginView, UserRegisterView
-from .views.profileViews import createNewProfile, getProfiles, updateProfile, deleteProfile
+from .views.profileViews import createNewProfile, getProfiles, updateProfile, deleteProfile, ProfileView
 
 urlpatterns = [
     url('api-token-auth/', views.obtain_auth_token, name='auth'),
     url('register/', UserRegisterView.as_view(), name='register'),
-    url('dummy/', dummyView, name='dummy'),
     url('login/', UserLoginView.as_view(), name='login'),
+    url('dummy/', dummyView, name='dummy'),
     url('create/profile/', createNewProfile, name='create-profile'),
     path('get/profiles/<slug:name>', getProfiles, name='get-profile'),
     path('get/profiles/', getProfiles, name='get-profiles'),
@@ -34,4 +34,5 @@ urlpatterns = [
     url('delete/profile/', deleteProfile, name='delete-profile'),
     url('get/fakes/', getFakeList, name='get-fake-persons'),
     url('location/', getUserLocation, name='get-location'),
+    url('profile/view/', ProfileView.as_view(), name='get-smth')
 ]

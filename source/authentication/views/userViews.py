@@ -40,90 +40,98 @@ from django.contrib.auth.models import User
 
 from authentication.models import Profile
 from authentication.serializers import UserSerializer, ProfileSerializer
-from source.helpers import optionHelper, getStringFromList, APIExtended
+from source.helpers import HelperFunctions, APIExtended
+from .profileViews import createNewProfile
 
-
-# TODO make some endpoint as GET for simple testing
-# TODO use renderer_classes to use rendered response by drf
-# TODO create a swagger by using drf renderer and making an automation for endpointsDescription
 
 class UserRegisterView(APIExtended):
     permission_classes = [AllowAny]
+    serializer_class = UserSerializer
 
     def __init__(self, **kwargs):
-        super().__init__(UserSerializer, **kwargs)
+        super().__init__(**kwargs)
 
-    def options(self, request, *args, **kwargs):
+        fieldsString = HelperFunctions.getStringFromList(self.fieldsNormalized, ', ')
+        self.parameters['description'] = 'This endpoint receives %s and creates an account' % fieldsString
 
-        fieldsString = getStringFromList(self.fieldsNormalized, ', ')
+    @staticmethod
+    def createUser(data):
 
-        self.parameters = optionHelper(request, self, {
-            'description': 'This endpoint receives %s and creates an account' % fieldsString,
-        })
-        return super().options(request, args, kwargs)
+        if HelperFunctions.isEmptyDict(data):
+            response = HelperFunctions.wrapResponse(info='no data was given')
+            return Response(response, status=status.HTTP_406_NOT_ACCEPTABLE)
 
-    def createUser(self, data):
         serializedUser = UserSerializer(data=data)
         if serializedUser.is_valid():
             user = serializedUser.create(validated_data=serializedUser.validated_data)
             token, created = Token.objects.get_or_create(user=user)
 
-            response = Response({'user': serializedUser.getJsonVariant(user), 'token': token.key},
-                                status=status.HTTP_201_CREATED)
+            response = HelperFunctions.wrapResponse(results={
+                'user': serializedUser.getJsonVariant(user),
+                'token': token.key})
+
+            response = Response(response, status=status.HTTP_201_CREATED)
             response.set_cookie('auth_token', token.key)
+
             return response
         else:
-            return Response({'error': serializedUser.errors}, status=status.HTTP_400_BAD_REQUEST)
+            response = HelperFunctions.wrapResponse(errors=serializedUser.errors)
+            return Response(response, status=status.HTTP_400_BAD_REQUEST)
 
     def get(self, request):
-        data = super().getTransform(request)
+        data = super().getRequestData(request)
         return self.createUser(data)
 
     def post(self, request):
-        data = super().postTransform(request)
+        data = super().getRequestData(request)
         return self.createUser(data)
 
 
 class UserLoginView(APIExtended):
     permission_classes = [AllowAny]
+    serializer_class = UserSerializer
 
     def __init__(self, **kwargs):
-        super().__init__(UserSerializer, **kwargs)
+        super().__init__(**kwargs)
+        # overwrite fields, normalization, description
         self.fieldsNormalized = ['username', 'password']
         self.fields = ['username', 'password']
 
-    def options(self, request, *args, **kwargs):
+        fieldsString = HelperFunctions.getStringFromList(self.fieldsNormalized, ', ')
+        self.parameters['description'] = 'This endpoint receives %s and login into an account' % fieldsString
 
-        fieldsString = getStringFromList(self.fieldsNormalized, ', ')
-
-        self.parameters = optionHelper(request, self, {
-            'description': 'This endpoint receives %s and login into an account' % fieldsString,
-        })
-        return super().options(request, args, kwargs)
-
-    def logInUser(self, data):
+    @staticmethod
+    def logInUser(data):
         # TODO password verification
+
+        if HelperFunctions.isEmptyDict(data):
+            response = HelperFunctions.wrapResponse(info='no data was given')
+            return Response(response, status=status.HTTP_406_NOT_ACCEPTABLE)
+
         user = User.objects.filter(username=data['username']).first()
         if user is None:
-            response = Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+            response = HelperFunctions.wrapResponse(errors='User not found')
+            response = Response(response, status=status.HTTP_404_NOT_FOUND)
         else:
             token, created = Token.objects.get_or_create(user=user)
 
-            response = Response({'user': UserSerializer.getJsonVariant(user), 'token': token.key},
-                                status=status.HTTP_200_OK)
+            response = HelperFunctions.wrapResponse(results={'user': UserSerializer.getJsonVariant(user),
+                                                             'token': token.key})
+
+            response = Response(response, status=status.HTTP_200_OK)
             response.set_cookie('auth_token', token.key)
         return response
 
-    def get(self, request):
+    def mainLogic(self, request):
         if request.user.id is not None:
-            return Response({'error': 'user is already logged in'})
+            return Response(HelperFunctions.wrapResponse(info='user is already logged in'))
         else:
-            data = super().getTransform(request)
+            data = super().getRequestData(request)
             return self.logInUser(data)
 
+    def get(self, request):
+        return self.mainLogic(request)
+
     def post(self, request):
-        if request.user.id is not None:
-            return Response({'error': 'user is already logged in'})
-        else:
-            data = super().postTransform(request)
-            return self.logInUser(data)
+        return self.mainLogic(request)
+

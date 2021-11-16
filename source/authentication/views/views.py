@@ -42,7 +42,7 @@ from django.contrib.auth.models import User
 from authentication.serializers import UserSerializer, ProfileSerializer
 from authentication.userManager import getPersonList, filterPersons
 
-from source.helpers import optionHelper, getStringFromList, APIExtended
+from source.helpers import HelperFunctions, APIExtended
 
 # TODO make some endpoint as GET for simple testing
 # TODO use renderer_classes to use rendered response by drf

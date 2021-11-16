@@ -2,6 +2,7 @@ from django.contrib.auth.models import User
 from rest_framework import serializers
 from .models import Profile
 
+
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
@@ -33,12 +34,13 @@ class UserSerializer(serializers.ModelSerializer):
             'password': instance.password
         }
 
+
 # when we add history for the profile we need to update the serializer
 class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = Profile
-        fields = ('profileName', )
-        fieldsNormalized = ('profile name', )
+        fields = ('profileName',)
+        fieldsNormalized = ('profile name',)
 
     def create(self, validated_data):
         profile = Profile.objects.create(**validated_data)
