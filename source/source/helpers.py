@@ -91,8 +91,8 @@ class HelperFunctions:
 class APIExtended(GenericAPIView):
 
     def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        serializerClass = super().serializer_class
+        super(APIExtended, self).__init__(**kwargs)
+        serializerClass = GenericAPIView.get_serializer_class(self)
 
         if serializerClass is None:
             raise Exception('There is no serializer attached to this model')
@@ -102,6 +102,15 @@ class APIExtended(GenericAPIView):
         self.parameters = {'model name': serializerClass.Meta.model.__name__,
                            'description': 'This endpoint\'s model has these fields: %s' %
                                           HelperFunctions.getStringFromList(self.fieldsNormalized, ', ')}
+        self.oldState = None
+        self.pathDict = {
+            'create': None,
+            'update': None,
+            'delete': None,
+            'list': None,
+            'get': None,
+            'default': None
+        }
 
     def options(self, request, *args, **kwargs):
 
@@ -109,13 +118,37 @@ class APIExtended(GenericAPIView):
         data = meta.determine_metadata(request, self)
         data.pop('renders')
         data.pop('parses')
-        post = data.pop('POST')
-        get = data.pop('GET')
+
+        # print(data.get('actions'))
+        fields = None
+
+        actions = data.get('actions')
+        if actions is not None:
+            if actions.get('POST'):
+                fields = dict(actions.pop('POST'))
+            if actions.get('GET'):
+                fields = dict(actions.pop('GET'))
+
+            print(fields)
+            data['fields'] = {}
+            for key in self.fields:
+                data['fields'][key] = fields[key]
 
         for key in self.parameters:
             data[key] = self.parameters[key]
 
         return Response(data)
+
+    def pathController(self, path):
+        for key in self.pathDict:
+            if key in path.split('/'):
+                return self.pathDict[key]
+
+        if self.pathDict.get('default') is not None:
+            return self.pathDict['default']
+
+        raise Exception('This is not a valid endpoint')
+
 
     def getRequestData(self, request):
         getSize = len(request.GET)
@@ -129,10 +162,33 @@ class APIExtended(GenericAPIView):
             getRequestDict = request.data
         else:
             return {}
-
-        getDict = {}
-        for fieldDB, fieldNormal in zip(self.fields, self.fieldsNormalized):
-            getDict[fieldDB] = getRequestDict.get(fieldNormal)
-
+        print(getRequestDict)
+        return getRequestDict
+        # with generic view, mapping is not necessary
+        #
+        # getDict = {}
+        # for fieldDB, fieldNormal in zip(self.fields, self.fieldsNormalized):
+        #     print(fieldDB, fieldNormal)
+        #     getDict[fieldDB] = getRequestDict.get(fieldNormal)
+        #
+        # print(getDict)
         # print(getDict, request.GET, request.data)
-        return getDict
+        # return getDict
+
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        return context
+
+    # def changeState(self, serializer):
+    #     if self.oldState is None:
+    #         # we copy the initial state
+    #         self.oldState = serializer.Meta.fields
+    #         serializer.Meta.fields = self.fields
+    #     else:
+    #         serializer.Meta.fields = self.oldState
+    #         self.oldState = None
+    #
+    #
+    #     # elif serializer.__name__ != :
+    #     #     serializer.Meta.fields = self.oldState
+    #     #     self.oldState = None

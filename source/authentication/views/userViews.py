@@ -43,6 +43,8 @@ from authentication.serializers import UserSerializer, ProfileSerializer
 from source.helpers import HelperFunctions, APIExtended
 from .profileViews import createNewProfile
 
+from ..userManager import createUser, logInUser
+
 
 class UserRegisterView(APIExtended):
     permission_classes = [AllowAny]
@@ -53,38 +55,18 @@ class UserRegisterView(APIExtended):
 
         fieldsString = HelperFunctions.getStringFromList(self.fieldsNormalized, ', ')
         self.parameters['description'] = 'This endpoint receives %s and creates an account' % fieldsString
+        self.pathDict['default'] = createUser
 
-    @staticmethod
-    def createUser(data):
-
-        if HelperFunctions.isEmptyDict(data):
-            response = HelperFunctions.wrapResponse(info='no data was given')
-            return Response(response, status=status.HTTP_406_NOT_ACCEPTABLE)
-
-        serializedUser = UserSerializer(data=data)
-        if serializedUser.is_valid():
-            user = serializedUser.create(validated_data=serializedUser.validated_data)
-            token, created = Token.objects.get_or_create(user=user)
-
-            response = HelperFunctions.wrapResponse(results={
-                'user': serializedUser.getJsonVariant(user),
-                'token': token.key})
-
-            response = Response(response, status=status.HTTP_201_CREATED)
-            response.set_cookie('auth_token', token.key)
-
-            return response
-        else:
-            response = HelperFunctions.wrapResponse(errors=serializedUser.errors)
-            return Response(response, status=status.HTTP_400_BAD_REQUEST)
+        # super().changeState(UserSerializer)
 
     def get(self, request):
         data = super().getRequestData(request)
-        return self.createUser(data)
+        controllerFunction = super().pathController(request.path)
+        return controllerFunction(data)
 
     def post(self, request):
         data = super().getRequestData(request)
-        return self.createUser(data)
+        return createUser(data)
 
 
 class UserLoginView(APIExtended):
@@ -93,6 +75,7 @@ class UserLoginView(APIExtended):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+
         # overwrite fields, normalization, description
         self.fieldsNormalized = ['username', 'password']
         self.fields = ['username', 'password']
@@ -100,38 +83,17 @@ class UserLoginView(APIExtended):
         fieldsString = HelperFunctions.getStringFromList(self.fieldsNormalized, ', ')
         self.parameters['description'] = 'This endpoint receives %s and login into an account' % fieldsString
 
-    @staticmethod
-    def logInUser(data):
-        # TODO password verification
-
-        if HelperFunctions.isEmptyDict(data):
-            response = HelperFunctions.wrapResponse(info='no data was given')
-            return Response(response, status=status.HTTP_406_NOT_ACCEPTABLE)
-
-        user = User.objects.filter(username=data['username']).first()
-        if user is None:
-            response = HelperFunctions.wrapResponse(errors='User not found')
-            response = Response(response, status=status.HTTP_404_NOT_FOUND)
-        else:
-            token, created = Token.objects.get_or_create(user=user)
-
-            response = HelperFunctions.wrapResponse(results={'user': UserSerializer.getJsonVariant(user),
-                                                             'token': token.key})
-
-            response = Response(response, status=status.HTTP_200_OK)
-            response.set_cookie('auth_token', token.key)
-        return response
+        # super().changeState(UserSerializer)
 
     def mainLogic(self, request):
         if request.user.id is not None:
             return Response(HelperFunctions.wrapResponse(info='user is already logged in'))
         else:
             data = super().getRequestData(request)
-            return self.logInUser(data)
+            return logInUser(data)
 
     def get(self, request):
         return self.mainLogic(request)
 
     def post(self, request):
         return self.mainLogic(request)
-

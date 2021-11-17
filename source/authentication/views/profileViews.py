@@ -44,69 +44,103 @@ from rest_framework.generics import GenericAPIView
 from rest_framework.mixins import CreateModelMixin, ListModelMixin, UpdateModelMixin, DestroyModelMixin, \
     RetrieveModelMixin
 
-class ProfileView(ListModelMixin, APIExtended, CreateModelMixin):
-    permission_classes = (IsAuthenticated,)
-    # pagination_class = api_settings.DEFAULT_PAGINATION_CLASS
+from ..profileManager import createNewProfile
+
+
+class ProfileView(APIExtended):
+    permission_classes = [IsAuthenticated]
     serializer_class = ProfileSerializer
-    queryset = Profile.objects.all()
 
     def __init__(self, **kwargs):
-        ListModelMixin.__init__(self)
-        # GenericAPIView.__init__(self)
-        CreateModelMixin.__init__(self)
-        APIExtended.__init__(self, ProfileSerializer)
+        super().__init__(**kwargs)
 
         fieldsString = HelperFunctions.getStringFromList(self.fieldsNormalized, ', ')
-        self.parameters['description'] = 'This endpoint receives %s and login into an account' % fieldsString
+        self.parameters['description'] = 'This endpoint receives %s and creates an account' % fieldsString
 
-    def list(self, request, *args, **kwargs):
-        queryset = self.get_queryset().filter(user=request.user)
-        return Response(HelperFunctions.wrapResponse(results=[
-            ProfileSerializer.getJsonVariant(profileObject) for profileObject in queryset
-        ]))
+        # add here the functions you use
+        self.pathDict['create'] = createNewProfile
+
+
+        # super().changeState(UserSerializer)
 
     def get(self, request):
-        return self.list(request)
+        data = super().getRequestData(request)
+        print(data)
+        print(request.path)
+        result = createNewProfile(data, request.user)
+        try:
+            return result
+        except Exception as e:
+            return Response(HelperFunctions.wrapResponse(errors=e.args))
 
     def post(self, request):
-        return super(ProfileView, self).post(request)
-
-    def create(self, request, *args, **kwargs):
-        super().create(request)
-
-    # def post(self, request):
-    #     return self.create(request)
-    # You can define .get in here if you really need it.
-    # You can also override .list to add specific functionality
+        data = super().getRequestData(request)
+        return createNewProfile(data, request.user)
 
 
-@api_view(['POST'])
-@permission_classes([IsAuthenticated])
-def createNewProfile(request):
-    # return JsonResponse({'value': profileSerializer.is_valid()})
-    randomString = str(uuid4())[0:19]
-    profileName = request.data.get('profileName') if request.data.get('profileName') else randomString
+# class ProfileView(ListModelMixin, APIExtended, CreateModelMixin):
+#     permission_classes = (IsAuthenticated,)
+#     # pagination_class = api_settings.DEFAULT_PAGINATION_CLASS
+#     serializer_class = ProfileSerializer
+#     queryset = Profile.objects.all()
+#
+#     def __init__(self, **kwargs):
+#         ListModelMixin.__init__(self)
+#         # GenericAPIView.__init__(self)
+#         CreateModelMixin.__init__(self)
+#         APIExtended.__init__(self, ProfileSerializer)
+#
+#         fieldsString = HelperFunctions.getStringFromList(self.fieldsNormalized, ', ')
+#         self.parameters['description'] = 'This endpoint receives %s and login into an account' % fieldsString
+#
+#     def list(self, request, *args, **kwargs):
+#         queryset = self.get_queryset().filter(user=request.user)
+#         return Response(HelperFunctions.wrapResponse(results=[
+#             ProfileSerializer.getJsonVariant(profileObject) for profileObject in queryset
+#         ]))
+#
+#     def get(self, request):
+#         return self.list(request)
+#
+#     def post(self, request):
+#         return super(ProfileView, self).post(request)
+#
+#     def create(self, request, *args, **kwargs):
+#         super().create(request)
+#
+#     # def post(self, request):
+#     #     return self.create(request)
+#     # You can define .get in here if you really need it.
+#     # You can also override .list to add specific functionality
 
-    found = Profile.objects.filter(profileName=profileName).first()
-    if found is not None:
-        # profileName = randomString
-        return Response({'error': 'a profile with this name already exists'}, status=status.HTTP_406_NOT_ACCEPTABLE)
 
-    profileSerializer = ProfileSerializer(data={'profileName': profileName})
-    if profileSerializer.is_valid():
-        newProfileDict = {
-            'profileName': profileSerializer.validated_data['profileName'],
-            'user': request.user,
-        }
-        try:
-            profile = profileSerializer.create(validated_data=newProfileDict)
-            return Response({'profile': ProfileSerializer.getJsonVariant(profile), 'error': None},
-                            status=status.HTTP_201_CREATED)
-        except Exception as e:
-            return Response({'error': e.args}, status=status.HTTP_400_BAD_REQUEST)
-    else:
-        return Response({'error': profileSerializer.errors}, status=status.HTTP_400_BAD_REQUEST)
-
+# @api_view(['POST'])
+# @permission_classes([IsAuthenticated])
+# def createNewProfile(request):
+#     # return JsonResponse({'value': profileSerializer.is_valid()})
+#     randomString = str(uuid4())[0:19]
+#     profileName = request.data.get('profileName') if request.data.get('profileName') else randomString
+#
+#     found = Profile.objects.filter(profileName=profileName).first()
+#     if found is not None:
+#         # profileName = randomString
+#         return Response({'error': 'a profile with this name already exists'}, status=status.HTTP_406_NOT_ACCEPTABLE)
+#
+#     profileSerializer = ProfileSerializer(data={'profileName': profileName})
+#     if profileSerializer.is_valid():
+#         newProfileDict = {
+#             'profileName': profileSerializer.validated_data['profileName'],
+#             'user': request.user,
+#         }
+#         try:
+#             profile = profileSerializer.create(validated_data=newProfileDict)
+#             return Response({'profile': ProfileSerializer.getJsonVariant(profile), 'error': None},
+#                             status=status.HTTP_201_CREATED)
+#         except Exception as e:
+#             return Response({'error': e.args}, status=status.HTTP_400_BAD_REQUEST)
+#     else:
+#         return Response({'error': profileSerializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+#
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])

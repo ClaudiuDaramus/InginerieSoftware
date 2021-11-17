@@ -27,12 +27,12 @@ urlpatterns = [
     url('register/', UserRegisterView.as_view(), name='register'),
     url('login/', UserLoginView.as_view(), name='login'),
     url('dummy/', dummyView, name='dummy'),
-    url('create/profile/', createNewProfile, name='create-profile'),
+    url('create/profile/', ProfileView.as_view(), name='create-profile'),
     path('get/profiles/<slug:name>', getProfiles, name='get-profile'),
     path('get/profiles/', getProfiles, name='get-profiles'),
     url('update/profile/', updateProfile, name='update-profile'),
     url('delete/profile/', deleteProfile, name='delete-profile'),
     url('get/fakes/', getFakeList, name='get-fake-persons'),
     url('location/', getUserLocation, name='get-location'),
-    url('profile/view/', ProfileView.as_view(), name='get-smth')
+    # url('profile/view/', ProfileView.as_view(), name='get-smth')
 ]
