@@ -37,6 +37,7 @@ from rest_framework import status
 
 from rest_framework.permissions import IsAdminUser, IsAuthenticated, AllowAny
 from django.contrib.auth.models import User
+from django.conf.urls import url
 
 from authentication.models import Profile
 from authentication.serializers import UserSerializer, ProfileSerializer
@@ -56,8 +57,10 @@ class UserRegisterView(APIExtended):
         fieldsString = HelperFunctions.getStringFromList(self.fieldsNormalized, ', ')
         self.parameters['description'] = 'This endpoint receives %s and creates an account' % fieldsString
         self.pathDict['default'] = createUser
-
         # super().changeState(UserSerializer)
+
+        # self.name = 'user/register'
+        # self.urls = self.createLinks()
 
     def get(self, request):
         data = super().getRequestData(request)
@@ -68,6 +71,10 @@ class UserRegisterView(APIExtended):
         data = super().getRequestData(request)
         return createUser(data)
 
+    # def createLinks(self):
+    #     if self.pathDict is None:
+    #         raise Exception('You need to create the path dictionary')
+    #     return [url(self.name + '/' + key + '/', UserRegisterView.as_view(), name=self.name + '-' + key) for key in self.pathDict]
 
 class UserLoginView(APIExtended):
     permission_classes = [AllowAny]
@@ -97,3 +104,6 @@ class UserLoginView(APIExtended):
 
     def post(self, request):
         return self.mainLogic(request)
+
+    # def getLinkList(self):
+    #     return super().getLinks(self.name, self.pathDict)

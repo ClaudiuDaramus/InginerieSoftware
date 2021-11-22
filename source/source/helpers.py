@@ -103,6 +103,8 @@ class APIExtended(GenericAPIView):
                            'description': 'This endpoint\'s model has these fields: %s' %
                                           HelperFunctions.getStringFromList(self.fieldsNormalized, ', ')}
         self.oldState = None
+        self.name = 'className'
+
         self.pathDict = {
             'create': None,
             'update': None,
@@ -149,7 +151,6 @@ class APIExtended(GenericAPIView):
 
         raise Exception('This is not a valid endpoint')
 
-
     def getRequestData(self, request):
         getSize = len(request.GET)
         postSize = len(request.data)
@@ -178,6 +179,12 @@ class APIExtended(GenericAPIView):
     def get_serializer_context(self):
         context = super().get_serializer_context()
         return context
+
+    # @staticmethod
+    # def getLinks(name, pathDict=None):
+    #     if pathDict is None:
+    #         raise Exception('You need to create the path dictionary')
+    #     return [(name + '/' + key + '/', name + '-' + key) for key in pathDict]
 
     # def changeState(self, serializer):
     #     if self.oldState is None:

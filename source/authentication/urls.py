@@ -36,3 +36,6 @@ urlpatterns = [
     url('location/', getUserLocation, name='get-location'),
     # url('profile/view/', ProfileView.as_view(), name='get-smth')
 ]
+
+# urlpatterns.extend([url(link, UserLoginView.as_view(), name=name) for (link, name) in UserLoginView.getLinkList()])
+# urlpatterns.extend(UserRegisterView.urls)
