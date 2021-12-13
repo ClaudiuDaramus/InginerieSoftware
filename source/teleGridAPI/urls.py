@@ -21,7 +21,7 @@ from .views import getCategories, getTodaySchedule, getSchedule, getSearchChanne
 
 urlpatterns = [
     url('categories/', getCategories, name='get-categories'),
-    url('today-schedule/<str:channel>', getTodaySchedule, name='get-today-schedule'),
+    url('today-schedule/', getTodaySchedule, name='get-today-schedule'),
     url('schedule/<str:channel>', getSchedule, name='get-schedule'),
     url('search-channel/<str:lang>/<str:cate>', getSearchChannel, name='get-search-channel'),
 ]

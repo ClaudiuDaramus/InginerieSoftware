@@ -1,39 +1,49 @@
 from django.shortcuts import render
 # Create your views here.
 import requests
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+
+from source.settings import x_rapidapi_host, x_rapidapi_key
 
 link = "https://indian-tv-schedule.p.rapidapi.com/"
 
 headers = {
-    'x-rapidapi-host': "indian-tv-schedule.p.rapidapi.com",
-    'x-rapidapi-key': "92efc58950msh3ba84d45c0ebccfp11e31cjsn09a9ed7db497"
+    'x-rapidapi-host': x_rapidapi_host,
+    'x-rapidapi-key': x_rapidapi_key
 }
 
-
-def getCategories():
-    response = requests.request("GET", link + "get-categories", headers=headers)
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def getCategories(request):
+    response = requests.get(link + "getCategories", headers=headers)
     print(response.text)
 
-    return response.text
+    return Response(response.json())
 
-
-def getTodaySchedule(channel):
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def getTodaySchedule(request):
+    channel = request.GET.get("channel")
     querystring = {"channel": channel}
-    response = requests.request("GET", link + "today-schedule", headers=headers, params=querystring)
+    response = requests.request("GET", link + "Schedule", headers=headers, params=querystring)
     print(response.text)
 
-    return response.text
+    return Response(response.json())
 
-
-def getSchedule(channel):
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def getSchedule(request, channel):
     querystring = {"channel": channel}
     response = requests.request("GET", link + "chedule", headers=headers, params=querystring)
     print(response.text)
 
     return response.text
 
-
-def getSearchChannel(lang, cate):
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def getSearchChannel(request, lang, cate):
     querystring = {}
     if lang & cate:
         querystring = {"lang": lang, "cate": cate}

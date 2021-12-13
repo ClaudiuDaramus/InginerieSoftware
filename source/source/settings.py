@@ -144,6 +144,8 @@ STATIC_URL = '/static/'
 
 OMDB_KEY = 'a430f7d3'
 OMDB_LINK = 'https://www.omdbapi.com/?'
+x_rapidapi_host ="indian-tv-schedule.p.rapidapi.com"
+x_rapidapi_key = "92efc58950msh3ba84d45c0ebccfp11e31cjsn09a9ed7db497"
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
