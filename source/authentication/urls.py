@@ -17,7 +17,7 @@ from django.conf.urls import url
 from django.urls import include, path
 from rest_framework.authtoken import views
 
-from .views.views import dummyView, getFakeList, getUserLocation
+from .views.views import dummyView, getFakeList, getUserLocation, getRandom
 
 from .views.userViews import UserLoginView, UserRegisterView
 from .views.profileViews import createNewProfile, getProfiles, updateProfile, deleteProfile, ProfileView
@@ -34,7 +34,7 @@ urlpatterns = [
     url('delete/profile/', deleteProfile, name='delete-profile'),
     url('get/fakes/', getFakeList, name='get-fake-persons'),
     url('location/', getUserLocation, name='get-location'),
-    # url('profile/view/', ProfileView.as_view(), name='get-smth')
+    url('random/', getRandom, name='get-random')
 ]
 
 # urlpatterns.extend([url(link, UserLoginView.as_view(), name=name) for (link, name) in UserLoginView.getLinkList()])

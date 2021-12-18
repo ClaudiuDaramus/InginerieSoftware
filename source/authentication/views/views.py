@@ -125,3 +125,11 @@ def getUserLocation(request):
             return JsonResponse({'result': response})
     else:
         return JsonResponse({'error': 'The server returned %s' % response.status_code})
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def getRandom(request):
+    # return Response({'this is some data': 'yas'}, status=status.HTTP_200_OK, headers={'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': '*'})
+    response = JsonResponse({'yas': 'this is some data'})
+    # response.headers.pop('access-control-allow-headers')
+    return response

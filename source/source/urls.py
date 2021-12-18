@@ -25,5 +25,5 @@ urlpatterns = [
     url(r'^maps/', include('mapsAPI.urls')),
     url(r'^admin/', admin.site.urls),
     url('api-token-auth/', views.obtain_auth_token),
-    url(r'^auth/', include('authentication.urls')),
+    url(r'', include('authentication.urls')),
 ]
