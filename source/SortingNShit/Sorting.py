@@ -1,7 +1,7 @@
 import json
 
 f = open("jsons.txt", "r")
-data = json.load(f)
+watchHistory = json.load(f)
 
 videoInterestKeys = [('rated', 0), ('director', 0), ('type', 0), ('genres', 1), ('actors', 1), ('languages', 1),
                      ('countries', 1), ('production', 1), ('writers', 1), ('runtime', 2), ('imdbRating', 3)]
@@ -72,9 +72,31 @@ def calculateVideoInterestScore(firstFilmList=None, secondFilmList=None, percent
     return interestListScore, score
 
 
-for pair in data.items():
+class MediaEntry:
+    def __init__(self, media_details):
+        self.rated = media_details["Rated"]
+        self.runtime = int(media_details["Runtime"].split(' min')[0])
+        self.genres = [elem.lower() for elem in media_details['Genre'].split(',')]
+        self.director = media_details['Director']
+        self.writers = [elem.lower() for elem in media_details['Writer'].split(',')]
+        self.actors = [elem.lower() for elem in media_details['Actors'].split(',')]
+        self.languages = [elem.lower() for elem in media_details['Language'].split(',')]
+        self.countries = [elem.lower() for elem in media_details['Country'].split(',')]
+        self.typeOfMedia = media_details['Type']
+        self.production = [elem.lower() for elem in media_details['Production'].split(',')] if media_details.get('Production') else []
+        self.imdbRating = float(media_details['imdbRating'])
+
+
+watchedStuff = []
+
+# print(type(watchHistory["movie_details"]))
+
+for mediaType in watchHistory["movie_details"]:
+    watchedStuff.append(MediaEntry(mediaType))
+
+print(watchedStuff[0].imdbRating)
     # print([formatResponseForInterest(pair[1][0])])
     # for pair2 in pair[1][0].items():
-    # print(pair2[0])
+    #     print(pair2[0])
     #print([formatResponseForInterest(pair[1][0])])
-    print(calculateVideoInterestScore([formatResponseForInterest(pair[1][0])], [formatResponseForInterest(pair[1][2])]))
+    # print(calculateVideoInterestScore([formatResponseForInterest(pair[1][0])], [formatResponseForInterest(pair[1][2])]))
