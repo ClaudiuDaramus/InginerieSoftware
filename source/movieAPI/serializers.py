@@ -30,7 +30,7 @@ class VideoContentSerializer(serializers.Serializer):
             found = Writer.objects.filter(name = writer).first()
             if found is None:
                 found = Writer.objects.create(writer = writer)
-            video.genres.add(found)
+            video.writers.add(found)
         for genre in genres:
             found = Genre.objects.filter(name=genre).first()
             if found is None:
@@ -40,7 +40,7 @@ class VideoContentSerializer(serializers.Serializer):
             found = Actor.objects.filter(name=actor).first()
             if found is None:
                 found = Actor.objects.create(actor=actor)
-            video.genres.add(found)
+            video.actors.add(found)
         return video
 
     def update(self, instance, validated_data):
