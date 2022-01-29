@@ -1,9 +1,9 @@
 import json
 
-from source.SortingNShit.Resources.HelperClasses.GridChannel import GridChannel
+from source.RecommandWatchingGrid.Resources.HelperClasses.GridChannel import GridChannel
 
 json_data = None
-with open("../Resources/Jsons/showBobNVeganaGrid/channel.json", 'r') as f:
+with open("../Resources/Jsons/ResponseGridAPI/channel.json", 'r') as f:
     json_data = json.load(f)
 
 channel_list = []

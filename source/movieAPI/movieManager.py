@@ -99,12 +99,14 @@ def calculateVideoInterestScore(firstFilmList=None, secondFilmList=None):
     return interestListScore, interestValue / percentageSum
 
 
-filmList = bigSearchForVideoContent('alchemist')
+#filmList = bigSearchForVideoContent('alchemist')
 
-print(len(filmList))
-print(filmList)
+#print(len(filmList))
+#print(filmList)
 
-print(searchForVideoContent(title='Shadowhunters: The Mortal Instruments'))
+
+"""
+filmListprint(searchForVideoContent(title='Shadowhunters: The Mortal Instruments'))
 
 firstUserSearch = searchForVideoContent(title='avatar')
 secondUserSearch = searchForVideoContent(title='the last airbender')
@@ -115,3 +117,4 @@ secondSearchFormatted = formatResponseForInterest(secondUserSearch)
 
 print(firstSearchFormatted, secondSearchFormatted)
 print(calculateVideoInterestScore([firstSearchFormatted], [secondSearchFormatted]))
+"""
