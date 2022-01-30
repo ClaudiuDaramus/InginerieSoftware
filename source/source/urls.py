@@ -13,17 +13,24 @@ Including another URLconf
     1. Import the include() function: from django.conf.urls import url, include
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
-from django.conf.urls import url, include
+from django.urls import include, re_path
 from django.contrib import admin
 from rest_framework.authtoken import views
+from rest_framework.schemas import get_schema_view
 
+schema_view = get_schema_view(
+    title='Server Monitoring API',
+    url='https://www.example.org/api/',
+)
 # do not use mapsAPI, it is not useful or okay right now
 urlpatterns = [
     # we make direct link between baseMaster app and site
-    url(r'^main/', include('baseMaster.urls')),
-    url(r'^movie/', include('movieAPI.urls')),
-    url(r'^maps/', include('mapsAPI.urls')),
-    url(r'^admin/', admin.site.urls),
-    url('api-token-auth/', views.obtain_auth_token),
-    url(r'^auth/', include('authentication.urls')),
+    re_path(r'^main/', include('baseMaster.urls')),
+    re_path(r'^movie/', include('movieAPI.urls')),
+    re_path(r'^maps/', include('mapsAPI.urls')),
+    re_path(r'^maps/', include('mapsAPI.urls')),
+    re_path(r'^music/', include('musicAPI.urls')),
+    re_path('api-token-auth/', views.obtain_auth_token),
+    re_path(r'^auth/', include('authentication.urls')),
+    re_path('swagger', schema_view)
 ]

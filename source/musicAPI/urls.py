@@ -13,8 +13,11 @@ Including another URLconf
     1. Import the include() function: from django.conf.urls import url, include
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
-from django.conf.urls import url, include
+from django.urls import include, re_path
 from django.contrib import admin
 from rest_framework.authtoken import views
+from musicAPI import views
 
-urlpatterns = []
+urlpatterns = [
+    re_path('', views.save_song)
+]

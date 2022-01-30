@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 import logging
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -116,6 +117,7 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.TokenAuthentication',
         'authentication.auth.TokenAuthSupportCookie'
     ],
+    'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema'
 }
 
 
@@ -155,6 +157,11 @@ LOGGING = {
             'class': 'logging.FileHandler',
             'filename': 'app.log',
         },
+        'musicAPIHandler': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': 'musicAPI/logs/debug.log',
+        }
     },
     'loggers': {
         'django': {
@@ -162,7 +169,13 @@ LOGGING = {
             'level': 'DEBUG',
             'propagate': True,
         },
+        'musicAPI': {
+            'handlers': ['musicAPIHandler'],
+            'level': 'DEBUG',
+        }
     },
 }
 
-LOGGER = logging.getLogger('django')
+logger = logging.getLogger(__name__)
+CELERY_BROKER_URL = os.environ.get("CELERY_BROKER", "redis://redis:6379/0")
+CELERY_RESULT_BACKEND = os.environ.get("CELERY_BROKER", "redis://redis:6379/0")
