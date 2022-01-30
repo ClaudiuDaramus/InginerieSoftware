@@ -7,8 +7,9 @@ from django.conf import settings
 class GridChannel:
     def __init__(self):
         self.channels = settings.CHANNELS
-        self.televisSettings = settings.TEL_SETTINGS
+        self.recommendationSettings = settings.RECOMMENDATION_SETTINGS
         self.userHistory = settings.USER_HIST
+
         self.headers = {
             'x-rapidapi-host': settings.INDIAN_TV_SCHEDULE_HOST,
             'x-rapidapi-key': settings.INDIAN_TV_SCHEDULE_KEY,
@@ -17,7 +18,8 @@ class GridChannel:
     def getChannelsByLanguage(self, langList=None):
         if langList is None:
             langList = ['English']
-        langList = [self.televisSettings['languages'].get(lang, "no language") for lang in langList]
+
+        langList = [self.recommendationSettings['languages'].get(lang, "no language") for lang in langList]
         channelDict = {}
         for key in self.channels:
             channel = self.channels[key]
@@ -25,8 +27,7 @@ class GridChannel:
                 channelDict[key] = channel
         return channelDict
 
-    def getChannelsProgram(self):
-        channels = self.getChannelsByLanguage()
+    def getChannelsProgram(self, channels):
         return [{
             'channel': key,
             'program': self.getTodaySchedule(key)
@@ -34,12 +35,15 @@ class GridChannel:
 
     def getTodaySchedule(self, channel):
         querystring = {"channel": channel}
-        response = requests.request("GET", settings.INDIAN_TV_SCHEDULE_LINK + "Schedule", headers=self.headers, params=querystring)
+        response = requests.request("GET", settings.INDIAN_TV_SCHEDULE_LINK + "Schedule", headers=self.headers,
+                                    params=querystring)
         # print(response.text)
         if response.status_code == 200:
             return response.json()
         else:
+            print(response.status_code, response.text)
             return None
+
 
 # gch = GridChannel()
 # print(gch.getChannelsByLanguage())

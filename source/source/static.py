@@ -3442,7 +3442,7 @@ channels = {
     },
 }
 
-settingTelevis = {
+recommendationSettings = {
     "categories": {
         "Entertainment": 5,
         "Movies": 6,
