@@ -7,12 +7,14 @@ import datetime
 from django.conf import settings
 from source.helpers import fromUtcFormat
 
+
 class TVMazeManager:
-    def __init__(self, savePath=settings.BASE_DIR + 'cache/'):
+    def __init__(self, savePath=os.path.join(settings.BASE_DIR, 'cache\\')):
         self.link = settings.TV_MAZE_LINK + 'schedule/full'
         self.savePath = savePath + 'tvMazeFullScheduleLocal.json'
 
     def acquired(self):
+        print(self.savePath)
         return os.path.exists(self.savePath)
 
     def saveData(self):
@@ -68,7 +70,7 @@ class TVMazeManager:
         country = channel.get('country')
         name = country.get('name') if country is not None else None
         code = country.get('code') if country is not None else None
-
+        # print(code, name)
         return {
             'externalId': int(channel['id']) if channel.get('id') is not None else None,
             'name': channel['name'],
@@ -129,19 +131,28 @@ class TVMazeManager:
             'rating': rating,
             'image': image,
             'show': show
-        }
+        } if show is not None else None
 
     def processedList(self):
         readData = self.readData()
-        for show in readData:
-            # TODO here we neeed to remap object in format 
-            pass
 
-tvMaze = TVMazeManager(os.getcwd())
-tvMazeData = tvMaze.readData()
+        processedDataList = []
+        for data in readData:
+            processedData = self.processScheduled(data)
+
+            if processedData is not None:
+                processedDataList.append(processedData)
+
+        return processedDataList
+
+
+tvManager = TVMazeManager()
+
+# tvMaze = TVMazeManager(os.getcwd())
+# tvMazeData = tvMaze.readData()
 # tvMazeDictKeys = tvMaze.returnAllKeys(tvMazeData)
 # print(tvMazeDictKeys)
-for show in tvMazeData:
-    pprint.pprint(tvMaze.processScheduled(show))
+# for show in tvMazeData:
+#     pprint.pprint(tvMaze.processScheduled(show))
 # for key in tvMazeData:
 #     print(key)

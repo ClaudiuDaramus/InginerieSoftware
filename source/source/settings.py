@@ -51,7 +51,8 @@ INSTALLED_APPS = [
     'authentication',
     'mapsAPI',
     'activitiesAPI',
-    'GridRecommendation'
+    'GridRecommendation',
+    'tvgrid'
 ]
 
 MIDDLEWARE = [
