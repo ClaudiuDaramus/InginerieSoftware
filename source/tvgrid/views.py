@@ -51,7 +51,7 @@ def updateTVScheduleObject(schedule):
     show = schedule['show']
 
     # they already are in the database
-    # getOrCreateSimpleBulk(Genre, show['genres'])
+    getOrCreateSimpleBulk(Genre, show['genres'])
 
     channel = show['channel']
     channelObject = createOrUpdateBasic(ChannelSerializer, channel, (True, False))
@@ -61,12 +61,44 @@ def updateTVScheduleObject(schedule):
     # print(showObject)
     # print('Show id %s' % showObject.id)
     # print(showObject)
-    # schedule['show'] = showObject
+    schedule['show'] = showObject
     episodeObject = createOrUpdateBasic(EpisodeSerializer, schedule, (True, True), ['show'])
 
     return episodeObject.getJSONVariant()
+
 
 @api_view(['GET'])
 @permission_classes([IsAdminUser])
 def updateTVSchedule(request):
     return StreamingHttpResponse(renderTVScheduleObjects())
+
+
+@api_view(['GET'])
+@permission_classes([IsAdminUser])
+def functionTesting(request):
+    channel = Channel.objects.filter(countryCode='US').all()
+    print(channel)
+    shows = Show.objects.filter(channel__in=channel).all()
+    print(shows)
+    for show in shows:
+        print(show.getJSONVariant())
+    return HttpResponse({'result': ''})
+    # pass
+
+
+from datetime import datetime, timedelta
+
+def getScheduleEpisodes():
+    todayDatetime = datetime.combine(datetime.today(), datetime.min.time())
+    print(todayDatetime, todayDatetime + timedelta(days=2))
+    episodes = Episode.objects.filter(startTime__gte=todayDatetime, startTime__lte=todayDatetime + timedelta(days=2)) \
+        .order_by('startTime', 'endTime')
+    return [episode.getJSONVariant() for episode in episodes]
+
+@api_view(['GET'])
+@permission_classes([IsAdminUser])
+def viewSchedule(request):
+    episodes = getScheduleEpisodes()
+
+    return Response({"result": episodes}, )
+

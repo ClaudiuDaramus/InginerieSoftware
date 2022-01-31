@@ -59,7 +59,7 @@ class Show(models.Model):
             'rating': self.rating,
             'weight': self.weight,
             'image': self.image,
-            'channelKey': self.channel
+            'channel': self.channel.getJSONVariant()
         }
 
 
@@ -84,5 +84,5 @@ class Episode(models.Model):
             'endTime': getTimeString(self.endTime),
             'rating': self.rating,
             'image': self.image,
-            'show': self.show,
+            'show': self.show.getJSONVariant(),
         }
