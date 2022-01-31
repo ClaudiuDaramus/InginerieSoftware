@@ -26,6 +26,6 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url('api-token-auth/', views.obtain_auth_token),
     url(r'^auth/', include('authentication.urls')),
-    url('^history/',include('watchHistory.urls')),
-    url('^content/',include('movieAPI.urls'))
+    url(r'^grid/', include('GridRecommendation.urls')),
+    url(r'^tv/', include('tvgrid.urls')),
 ]

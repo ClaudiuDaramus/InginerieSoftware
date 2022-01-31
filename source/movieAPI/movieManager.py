@@ -4,6 +4,8 @@ import requests
 import urllib3
 from django.conf import settings
 
+# settings.configure()
+
 mainLink = settings.OMDB_LINK
 omdbKey = settings.OMDB_KEY
 
@@ -125,19 +127,23 @@ def calculateVideoInterestScoreUpgraded(firstFilmList=None, secondFilmList=None)
 
     return interestListScore, round(interestValue, 2)
 
-# filmList = bigSearchForVideoContent('alchemist')
-#
-# print(len(filmList))
-# print(filmList)
 
-# print(searchForVideoContent(title='Shadowhunters: The Mortal Instruments'))
+#filmList = bigSearchForVideoContent('alchemist')
 
-# firstUserSearch = searchForVideoContent(title='avatar')
-# secondUserSearch = searchForVideoContent(title='the last airbender')
-#
-# print(firstUserSearch)
-# firstSearchFormatted = formatResponseForInterest(firstUserSearch)
-# secondSearchFormatted = formatResponseForInterest(secondUserSearch)
-#
-# print(firstSearchFormatted, secondSearchFormatted)
-# print(calculateVideoInterestScore([firstSearchFormatted], [secondSearchFormatted]))
+#print(len(filmList))
+#print(filmList)
+
+
+"""
+filmListprint(searchForVideoContent(title='Shadowhunters: The Mortal Instruments'))
+
+firstUserSearch = searchForVideoContent(title='avatar')
+secondUserSearch = searchForVideoContent(title='the last airbender')
+
+print(firstUserSearch)
+firstSearchFormatted = formatResponseForInterest(firstUserSearch)
+secondSearchFormatted = formatResponseForInterest(secondUserSearch)
+
+print(firstSearchFormatted, secondSearchFormatted)
+print(calculateVideoInterestScore([firstSearchFormatted], [secondSearchFormatted]))
+"""
