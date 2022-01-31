@@ -1,7 +1,8 @@
-from ..movieAPI.models import VideoContent
+from movieAPI.models import VideoContent
 from models import *
+from tvgrid.models import Channel
 
-def addWatchHistory(isLiked,content,profile):
-    if content.model is VideoContent:
-     addWatchHistory = WatchHistory.objects.create(userId=profile,type=content.model.type,preference=isLiked)
-    addWatchHistory.save()
+
+def addWatchHistory(isLiked,type,profile,externalId):
+    addWatchHistoryObj = WatchHistory.objects.create(profile=profile,type=type,preference=isLiked,externalId=externalId)
+    addWatchHistoryObj.save()

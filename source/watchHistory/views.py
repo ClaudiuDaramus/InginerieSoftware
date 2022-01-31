@@ -38,8 +38,19 @@ from rest_framework import status
 from rest_framework.permissions import IsAdminUser, IsAuthenticated, AllowAny
 from django.contrib.auth.models import User
 from .models import *
+from watchHistoryManager import *
+from authentication.models import Profile
+
+
 @api_view(["GET"])
 @permission_classes([AllowAny])
 def createHistory(request):
-    history = WatchHistory.objects.create(title="test title",genre="test genre",rated=1,director="test director",type="test type",actors="test actors",languages="test languages",production="test production",writers="test writers",runtime="test runtime")
+    isLiked = request.GET.get("isLiked", True)
+    type = request.GET.get("type", "VideoContent")
+    profileName = request.GET.get("profileName")
+    profile = Profile.objects.filter(profileName=profileName).filter(userId=request.user.id).first()
+    externalId = request.GET.get("externalId", 0)
+    if profile is None:
+        return JsonResponse({"error":"There is no profile with this name"})
+    history = addWatchHistory(isLiked = isLiked, type = type, profile = profile, externalId = externalId )
     return JsonResponse({"test": "text"})
