@@ -1,4 +1,3 @@
-from .models import movieHistory
 import rest_framework.decorators
 from django.shortcuts import render
 
@@ -38,9 +37,9 @@ from rest_framework import status
 
 from rest_framework.permissions import IsAdminUser, IsAuthenticated, AllowAny
 from django.contrib.auth.models import User
-
+from .models import *
 @api_view(["GET"])
 @permission_classes([AllowAny])
 def createHistory(request):
-    history = movieHistory.objects.create(title="test title",genre="test genre",rated=1,director="test director",type="test type",actors="test actors",languages="test languages",production="test production",writers="test writers",runtime="test runtime")
+    history = WatchHistory.objects.create(title="test title",genre="test genre",rated=1,director="test director",type="test type",actors="test actors",languages="test languages",production="test production",writers="test writers",runtime="test runtime")
     return JsonResponse({"test": "text"})

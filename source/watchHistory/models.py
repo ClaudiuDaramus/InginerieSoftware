@@ -1,19 +1,14 @@
 from django.db import models
 
+from authentication.models import Profile
 
 # Create your models here.
-class movieHistory(models.Model):
-    title = models.CharField(max_length=120)
-    genre = models.CharField(max_length=120)
-    rated = models.IntegerField(blank=False, null=False)
-    director = models.CharField(max_length=120)
+class WatchHistory(models.Model):
+    profile = models.ForeignKey(Profile,on_delete=models.CASCADE)
+    externalId = models.IntegerField(max_length=120)
     type = models.CharField(max_length=120)
-    actors = models.CharField(max_length=120)
-    languages = models.CharField(max_length=120)
-    countries = models.CharField(max_length=120)
-    production = models.CharField(max_length=120)
-    writers = models.CharField(max_length=120)
-    runtime = models.CharField(max_length=120)
+    preference = models.BooleanField(blank=False, null=False)
+
 
     def __str__(self):
-        return self.title
+        return self.externalId
