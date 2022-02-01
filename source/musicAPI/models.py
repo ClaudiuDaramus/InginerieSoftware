@@ -6,7 +6,7 @@ class Song(models.Model):
     shazam_key = models.IntegerField(primary_key=True)
     title = models.CharField(max_length=120)
     artist = models.CharField(max_length=120)
-    cover = models.ImageField(upload_to='images')
+    # cover = models.ImageField(upload_to='images')
     
     def __str__(self):
         return self.title

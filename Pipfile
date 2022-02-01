@@ -1,0 +1,16 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+celery = "*"
+djangorestframework = "*"
+redis = "*"
+requests = "*"
+Django = ">=4"
+
+[dev-packages]
+
+[requires]
+python_version = "3.10"

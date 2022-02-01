@@ -1,0 +1,43 @@
+version: "3.9"
+
+services:
+
+  redis:
+    image: redis:latest
+    hostname: redis
+
+  rabbitmq:
+    image: rabbitmq:latest
+    hostname: rabbitmq
+    env_file:
+      - .env
+    ports:
+      - "5672:5672"  
+      - "15672:15672"
+
+  django:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    hostname: django
+    command: sh scripts/run_app.sh
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    links:
+      - rabbitmq
+      - redis
+
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: sh scripts/run_celery.sh
+    volumes:
+      - .:/app
+    links:
+      - rabbit
+      - redis
+    depends_on:
+      - rabbitmq
