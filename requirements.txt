@@ -3,6 +3,8 @@ celery
 djangorestframework
 redis
 requests
-logging
 ffmpeg
 pika
+asyncio
+PyYAML==6.0
+coreapi==2.3.3

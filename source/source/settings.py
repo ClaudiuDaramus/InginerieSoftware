@@ -26,7 +26,7 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv("DEBUG")
 
-ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS").split()
+ALLOWED_HOSTS = [str(x) for x in os.getenv("ALLOWED_HOSTS").split()]
 
 # Application definition
 
@@ -138,6 +138,10 @@ STATIC_URL = 'static/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
+
+
+OMDB_KEY = os.getenv('OMDB_KEY')
+OMDB_LINK = os.getenv('OMDB_LINK')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 

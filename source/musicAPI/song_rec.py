@@ -9,8 +9,10 @@ from urllib.error import HTTPError
 import ffmpeg
 from django.core.validators import URLValidator
 from django.core.exceptions import ValidationError
+from source.celery import app
 
 logger = logging.getLogger(__name__)
+
 
 async def get_payload(url):
     process1 = await asyncio.create_subprocess_shell(f'youtube-dl -g {url}', stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE)
