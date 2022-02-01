@@ -1,7 +1,3 @@
-. .env
-exec "$@"
-cd source
-
 sleep 10
 
 python manage.py makemigrations
