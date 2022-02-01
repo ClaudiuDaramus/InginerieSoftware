@@ -8,8 +8,6 @@ __pycache__/
 
 # Distribution / packaging
 .Python
-.DS_Store
-.idea
 build/
 develop-eggs/
 dist/
@@ -129,6 +127,3 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
-
-.idea/*
-.vscode/*
