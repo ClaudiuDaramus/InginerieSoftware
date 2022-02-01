@@ -16,6 +16,7 @@ RUN pip install pipenv && pipenv install --system
 # Create and switch to a new user
 RUN useradd -U django_admin
 COPY --chown=django_admin:django_admin scripts/run_app.sh /bin/run_app.sh
+COPY --chown=django_admin:django_admin .env /.env
 WORKDIR /app
 USER django_admin:django_admin
 COPY --chown=django_admin:django_admin /source .

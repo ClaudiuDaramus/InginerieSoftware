@@ -1,8 +1,7 @@
-echo $pwd
-
+. .env
+exec "$@"
 cd source
 
-# TODO fix 
 sleep 10
 
 python manage.py makemigrations

@@ -20,7 +20,9 @@ services:
       context: .
       dockerfile: Dockerfile
     hostname: django
-    command: sh scripts/run_app.sh
+    command: bash scripts/run_app.sh
+    env_file:
+      - .env
     volumes:
       - .:/app
     ports:
@@ -33,7 +35,9 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    command: sh scripts/run_celery.sh
+    command: bash scripts/run_celery.sh
+    env_file:
+      - .env
     volumes:
       - .:/app
     links:

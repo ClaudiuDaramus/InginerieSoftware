@@ -1,6 +1,8 @@
+. .env
+exec "$@"
 cd source
 
-# TODO fix 
+# TODO
 sleep 10
 
 celery -A source worker -l info
