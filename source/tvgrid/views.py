@@ -51,7 +51,7 @@ def updateTVScheduleObject(schedule):
     show = schedule['show']
 
     # they already are in the database
-    getOrCreateSimpleBulk(Genre, show['genres'])
+    # getOrCreateSimpleBulk(Genre, show['genres'])
 
     channel = show['channel']
     channelObject = createOrUpdateBasic(ChannelSerializer, channel, (True, False))
@@ -68,7 +68,7 @@ def updateTVScheduleObject(schedule):
 
 
 @api_view(['GET'])
-@permission_classes([IsAdminUser])
+@permission_classes([IsAuthenticated])
 def updateTVSchedule(request):
     return StreamingHttpResponse(renderTVScheduleObjects())
 

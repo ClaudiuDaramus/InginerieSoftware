@@ -39,9 +39,9 @@ from rest_framework.permissions import IsAdminUser, IsAuthenticated, AllowAny
 from django.contrib.auth.models import User
 from .models import *
 from authentication.models import Profile
-
+from random import randint, choices
 from .watchHistoryManager import addWatchHistory
-
+from tvgrid.models import *
 @api_view(["GET"])
 @permission_classes([AllowAny])
 def createHistory(request):
@@ -63,3 +63,17 @@ def createHistory(request):
         return JsonResponse({"error":"There is no profile with this name"})
     history = addWatchHistory(isLiked = isLiked, type = type, profile = profile, externalId = externalId )
     return JsonResponse(history.getJSONVariant())
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def createAutomatedHistory(request):
+ episodes = Episode.objects.all()
+ episodesId = [episode.id for episode in episodes]
+ episodesId= choices(episodesId, k=20)
+ return JsonResponse({"results":episodesId})
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def findProfile(request):
+    profileName = request.GET.get("default ")
+    return JsonResponse(profileName.getJsonVariant())

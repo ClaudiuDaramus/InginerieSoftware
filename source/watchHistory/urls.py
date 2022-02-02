@@ -14,10 +14,11 @@ Including another URLconf
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
 from django.conf.urls import url
-from .views import createHistory
+from .views import createHistory, createAutomatedHistory
 from django.urls import include, path
 from rest_framework.authtoken import views
 
 urlpatterns = [
-    url("create/", createHistory, name="create history")
+    url("create/automated/", createAutomatedHistory, name="create history automated"),
+    url("create/", createHistory, name="create history"),
 ]
