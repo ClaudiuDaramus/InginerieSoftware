@@ -23,6 +23,7 @@ urlpatterns = [
     url(r'^main/', include('baseMaster.urls')),
     url(r'^movie/', include('movieAPI.urls')),
     url(r'^maps/', include('mapsAPI.urls')),
+    url(r'^music/', include('musicAPI.urls')),
     url(r'^admin/', admin.site.urls),
     url('api-token-auth/', views.obtain_auth_token),
     url(r'^auth/', include('authentication.urls')),
