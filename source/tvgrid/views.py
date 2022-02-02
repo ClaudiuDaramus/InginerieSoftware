@@ -54,11 +54,12 @@ def searchableShowContent(jsonList):
     for index, watched in enumerate(jsonList):
         watchHistoryDict[watched['id']] = (searchForVideoContent(title=watched['show']['name']), index)
 
+    newWatchHistoryDict = {}
     for key in watchHistoryDict:
-        if watchHistoryDict.get(key)[0] is None:
-            watchHistoryDict.pop(key)
+        if watchHistoryDict.get(key)[0] is not None:
+            newWatchHistoryDict[key] = watchHistoryDict[key]
 
-    return watchHistoryDict
+    return newWatchHistoryDict
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
@@ -69,16 +70,16 @@ def compareMovieListView(request):
         return JsonResponse({"errors": "You need to complete the profile name parameter"})
     # get Profile using profile obj and name from request
     profile = Profile.objects.filter(profileName=profileName).filter(user__id=request.user.id).first()
-    watchHistory = WatchHistory.objects.filter(profile__id=profile.id).all()
+    watchHistory = WatchHistory.objects.filter(profile=profile, type="tv").all()
     watchHistory = Episode.objects.filter(id__in=[watched.externalId for watched in watchHistory]).all()
     watchHistory = [watched.getJSONVariant() for watched in watchHistory]
+    # return JsonResponse(watchHistory, safe=False)
     episodes = getScheduleEpisodes()
+    # return JsonResponse(episodes, safe=False)
 
     watchHistoryDict = searchableShowContent(watchHistory)
     episodeDict = searchableShowContent(episodes)
-
-
-
+    
     try:
         watchHistoryList = [formatResponseForInterest(watchHistoryDict[key][0], watchHistory[watchHistoryDict[key][1]]) for key in watchHistoryDict]
         episodeList = [formatResponseForInterest(episodeDict[key][0], episodes[episodeDict[key][1]]) for key in episodeDict]

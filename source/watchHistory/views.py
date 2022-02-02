@@ -1,7 +1,7 @@
 # Create your views here.
 # -*- coding: utf-8 -*-
 
-from random import choices
+from random import choices, randint
 
 from authentication.models import Profile
 from django.http import JsonResponse
@@ -47,6 +47,10 @@ def createAutomatedHistory(request):
 
     episodes = Episode.objects.all()
     episodesId = [episode.id for episode in episodes]
-    print(episodesId)
+    # print(episodesId)
     episodesId = choices(episodesId, k=20)
-    return JsonResponse({"results": episodesId})
+    # isLiked, type, profile, externalId
+
+    isLiked = True if randint(0, 12) % 2 == 1 else False
+    historyCreated = [addWatchHistory(isLiked, "tv", profile, epId).getJSONVariant() for epId in episodesId]
+    return JsonResponse({"results": historyCreated})

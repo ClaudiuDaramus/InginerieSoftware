@@ -1,5 +1,6 @@
 import urllib.parse
 
+from random import randint
 import requests
 import urllib3
 from django.conf import settings
@@ -70,7 +71,7 @@ def searchForVideoContent(imdbID=None, title=None, plotType='full'):
     searchBy = ('i', imdbID) if imdbID is not None else ('t', title)
     parameters = urllib.parse.urlencode({'apiKey': omdbKey, searchBy[0]: searchBy[1], 'plot': plotType})
     response = requests.get(mainLink + parameters).json()
-    print(response)
+    # print(response)
     return None if response['Response'] == 'False' else response
 
 
@@ -87,8 +88,8 @@ def oldFormatResponseForInterest(response=None):
         'actors': [elem.lower() for elem in response['Actors'].split(', ')],
         'languages': [elem.lower() for elem in response['Language'].split(', ')],
         'countries': [elem.lower() for elem in response['Country'].split(', ')],
-        'imdbRating': float(response['imdbRating']),
-        'metascore': float(response['Metascore']),
+        'imdbRating': response['imdbRating'],
+        'metascore': response['Metascore'],
         'type': response['Type'],
         'production': [elem.lower() for elem in response['Production'].split(', ')]
         if response.get('Production') and response.get('Production') != 'N/A' else []
@@ -132,33 +133,34 @@ def calculateVideoInterestScoreUpgraded(schedule=None, watchHistory=None):
     for i in len(schedule):
         episode = schedule[i]
         for entry in watchHistory:
-            percentageSum = 100
-            interestValue = 0
-            for key in videoInterest:
-                (videoObjectType, videoObjectWeight) = videoInterest[key]
-                if episode[key] is None or entry[key] is None:
-                    percentageSum -= videoObjectWeight
-                elif videoObjectType == 0:
-                    interestValue += videoObjectWeight if episode[key] == entry[key] else 0
+        #     percentageSum = 100
+        #     interestValue = 0
+        #     for key in videoInterest:
+        #         (videoObjectType, videoObjectWeight) = videoInterest[key]
+        #         if episode[key] is None or entry[key] is None:
+        #             percentageSum -= videoObjectWeight
+        #         elif videoObjectType == 0:
+        #             interestValue += videoObjectWeight if episode[key] == entry[key] else 0
+        #
+        #         elif videoObjectType == 1:
+        #             counter = 0
+        #             for firstElem in episode[key]:
+        #                 if firstElem in entry[key]:
+        #                     counter += 1
+        #
+        #             maxLength = max(len(episode[key]), len(entry[key]))
+        #             interestValue += 0 if maxLength == 0 else videoObjectWeight * counter / maxLength
+        #
+        #         elif videoObjectType == 2:
+        #             minLength = min(episode[key], entry[key]) * 1.0
+        #             maxLength = max(episode[key], entry[key]) * 1.0
+        #
+        #             interestValue += 0 if maxLength == 0 else videoObjectWeight * minLength / maxLength
 
-                elif videoObjectType == 1:
-                    counter = 0
-                    for firstElem in episode[key]:
-                        if firstElem in entry[key]:
-                            counter += 1
+            # episodeInterest = round(interestValue / percentageSum * 100, 2)
+            episodeInterest = randint(0, 100)
 
-                    maxLength = max(len(episode[key]), len(entry[key]))
-                    interestValue += 0 if maxLength == 0 else videoObjectWeight * counter / maxLength
-
-                elif videoObjectType == 2:
-                    minLength = min(episode[key], entry[key]) * 1.0
-                    maxLength = max(episode[key], entry[key]) * 1.0
-
-                    interestValue += 0 if maxLength == 0 else videoObjectWeight * minLength / maxLength
-
-            episodeInterest = round(interestValue / percentageSum * 100, 2)
-
-        scheduleListWeighted.append((episode, episodeInterest))
+            scheduleListWeighted.append((episode, episodeInterest))
 
     return scheduleListWeighted
 
