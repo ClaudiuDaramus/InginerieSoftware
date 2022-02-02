@@ -93,7 +93,7 @@ def oldFormatResponseForInterest(response=None):
         'production': [elem.lower() for elem in response['Production'].split(', ')]
         if response.get('Production') and response.get('Production') != 'N/A' else []
     }
-def formatResponse(response=None):
+#def formatResponse(response=None):
 
     # return {
     #     # rating, sameShow, showRating, showLanguage, sameChannel(channelName), channelType if show is found by API

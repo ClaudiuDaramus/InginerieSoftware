@@ -10,8 +10,9 @@ from rest_framework.response import Response
 from .scheduleHelper import getScheduleEpisodes, updateTVScheduleObject
 from .serializers import *
 from .tvGridManager import tvManager
-from movieAPI.movieManager import searchForVideoContent, formatResponseForInterest, calculateVideoInterestScoreUpgraded
-from recommandationHelper import WeightedIntervalScheduling
+from movieAPI.movieManager import searchForVideoContent, calculateVideoInterestScoreUpgraded
+from .recommandationHelper import WeightedIntervalScheduling
+from .scheduleHelper import formatResponseForInterest
 
 
 def renderTVScheduleObjects():

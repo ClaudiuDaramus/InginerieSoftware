@@ -6,15 +6,16 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 
 from tvgrid.recommandationHelper import WeightedIntervalScheduling
-from .movieManager import bigSearchForVideoContent, formatResponseForInterest, searchForVideoContent, \
+from .movieManager import bigSearchForVideoContent, oldFormatResponseForInterest, searchForVideoContent, \
     calculateVideoInterestScoreUpgraded
 
 from rest_framework import status
 from .models import VideoContent
 from rest_framework.permissions import IsAdminUser, IsAuthenticated, AllowAny
 from django.contrib.auth.models import User
-from .movieManager import bigSearchForVideoContent, formatResponseForInterest, searchForVideoContent, \
+from .movieManager import bigSearchForVideoContent, oldFormatResponseForInterest, searchForVideoContent, \
     calculateVideoInterestScoreUpgraded
+from tvgrid.scheduleHelper import formatResponseForInterest
 from .serializers import VideoContentSerializer
 
 
