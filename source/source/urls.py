@@ -24,5 +24,6 @@ urlpatterns = [
     re_path(r'^movie/', include('movieAPI.urls')),
     re_path(r'^maps/', include('mapsAPI.urls')),
     re_path(r'^admin/', admin.site.urls),
+    re_path(r'^music/', include('musicAPI.urls'))
     # url(r'^grid/', include('GridRecommendation.urls')),
 ]

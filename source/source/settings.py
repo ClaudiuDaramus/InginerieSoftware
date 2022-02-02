@@ -153,11 +153,6 @@ LOGGING = {
             'class': 'logging.FileHandler',
             'filename': 'app.log',
         },
-        'musicAPIHandler': {
-            'level': 'DEBUG',
-            'class': 'logging.FileHandler',
-            'filename': 'musicAPI/logs/debug.log',
-        }
     },
     'loggers': {
         'django': {
@@ -165,10 +160,6 @@ LOGGING = {
             'level': 'DEBUG',
             'propagate': True,
         },
-        'musicAPI': {
-            'handlers': ['musicAPIHandler'],
-            'level': 'DEBUG',
-        }
     },
 }
 

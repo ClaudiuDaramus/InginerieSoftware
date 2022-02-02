@@ -1,3 +1,3 @@
 sleep 10
-
-celery -A source worker -l info
+cd source
+celery -A -E source worker -l info

@@ -19,5 +19,5 @@ from rest_framework.authtoken import views
 from musicAPI import views
 
 urlpatterns = [
-    re_path('', views.save_song)
+    re_path(r'^get', views.get_playing_song)
 ]
