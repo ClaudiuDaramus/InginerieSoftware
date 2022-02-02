@@ -1,6 +1,7 @@
 from django.db import models
 
 from authentication.models import Profile
+from authentication.serializers import *
 
 # Create your models here.
 class WatchHistory(models.Model):
@@ -12,3 +13,11 @@ class WatchHistory(models.Model):
 
     def __str__(self):
         return self.externalId
+
+    def getJSONVariant(self):
+        return  {
+            "profile": ProfileSerializer.getJsonVariant(self.profile),
+            "externalId": self.externalId,
+            "type": self.type,
+            "preference": self.preference
+        }

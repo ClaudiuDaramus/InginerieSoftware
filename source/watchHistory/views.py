@@ -42,16 +42,24 @@ from authentication.models import Profile
 
 from .watchHistoryManager import addWatchHistory
 
-
 @api_view(["GET"])
 @permission_classes([AllowAny])
 def createHistory(request):
-    isLiked = request.GET.get("isLiked", True)
+    isLiked = request.GET.get("isLiked")
+    if isLiked.lower() == "true":
+        isLiked = True
+    elif isLiked.lower() == "false":
+        isLiked = False
+    else:
+        isLiked = True
+        # default
+
+    print(isLiked)
     type = request.GET.get("type", "VideoContent")
     profileName = request.GET.get("profileName")
-    profile = Profile.objects.filter(profileName=profileName).filter(userId=request.user.id).first()
+    profile = Profile.objects.filter(profileName=profileName).filter(user__id=request.user.id).first()
     externalId = request.GET.get("externalId", 0)
     if profile is None:
         return JsonResponse({"error":"There is no profile with this name"})
     history = addWatchHistory(isLiked = isLiked, type = type, profile = profile, externalId = externalId )
-    return JsonResponse({"test": "text"})
+    return JsonResponse(history.getJSONVariant())
