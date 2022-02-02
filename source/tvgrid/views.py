@@ -94,7 +94,7 @@ def compareMovieListView(request):
         # interest
 
         reformattedListForWeightedIntervalScheduling = []
-        for i in len(scheduleListWeighted):
+        for i in range(len(scheduleListWeighted)):
             # scheduleListWeighted[X][0] is the entry/episode at index X in scheduleListWeighted \
             # scheduleListWeighted[X][1] is the entry/episode's interest at index X in scheduleListWeighted
             reformattedListForWeightedIntervalScheduling.append((scheduleListWeighted[i][0]["startTime"],
