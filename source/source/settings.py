@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework.authtoken',
     'rest_framework',
+    'rest_framework_swagger',
     'baseMaster',
     'movieAPI',
     'musicAPI',
@@ -122,7 +123,8 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.BasicAuthentication',
         'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.TokenAuthentication',
-        'authentication.auth.TokenAuthSupportCookie'
+        'authentication.auth.TokenAuthSupportCookie',
+        'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
     ],
 }
 
