@@ -1,5 +1,5 @@
 from movieAPI.models import VideoContent
-from models import *
+from .models import *
 from tvgrid.models import Channel
 
 

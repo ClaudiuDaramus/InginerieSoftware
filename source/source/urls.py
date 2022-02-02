@@ -28,4 +28,6 @@ urlpatterns = [
     url(r'^auth/', include('authentication.urls')),
     url(r'^grid/', include('GridRecommendation.urls')),
     url(r'^tv/', include('tvgrid.urls')),
+    url(r'^history/', include('watchHistory.urls')),
+
 ]

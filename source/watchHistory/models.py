@@ -5,7 +5,7 @@ from authentication.models import Profile
 # Create your models here.
 class WatchHistory(models.Model):
     profile = models.ForeignKey(Profile,on_delete=models.CASCADE)
-    externalId = models.IntegerField(max_length=120)
+    externalId = models.IntegerField()
     type = models.CharField(max_length=120)
     preference = models.BooleanField(blank=False, null=False)
 

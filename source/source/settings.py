@@ -52,7 +52,8 @@ INSTALLED_APPS = [
     'mapsAPI',
     'activitiesAPI',
     'GridRecommendation',
-    'tvgrid'
+    'tvgrid',
+    'watchHistory'
 ]
 
 MIDDLEWARE = [

@@ -38,8 +38,9 @@ from rest_framework import status
 from rest_framework.permissions import IsAdminUser, IsAuthenticated, AllowAny
 from django.contrib.auth.models import User
 from .models import *
-from watchHistoryManager import *
 from authentication.models import Profile
+
+from .watchHistoryManager import addWatchHistory
 
 
 @api_view(["GET"])

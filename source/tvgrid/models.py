@@ -1,5 +1,6 @@
 from django.db import models
 from .helpers import getManyOrNone, getTimeString
+from authentication.models import Profile
 
 
 class Genre(models.Model):

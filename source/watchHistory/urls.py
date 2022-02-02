@@ -17,6 +17,7 @@ from django.conf.urls import url
 from .views import createHistory
 from django.urls import include, path
 from rest_framework.authtoken import views
+
 urlpatterns = [
-   url("create/",createHistory,name="create history")
+    url("create/", createHistory, name="create history")
 ]
