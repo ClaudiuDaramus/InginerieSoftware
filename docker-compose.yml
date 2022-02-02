@@ -41,7 +41,7 @@ services:
     volumes:
       - .:/app
     links:
-      - rabbit
+      - rabbitmq
       - redis
     depends_on:
       - rabbitmq
