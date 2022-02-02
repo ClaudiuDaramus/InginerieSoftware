@@ -47,3 +47,9 @@ And we have the following utilities:
 >> 3. **admin.site.register(YourModel)** 
 5. To make a super user for the admin interface use **python manage.py createsuperuser**
 6. To run the project use **python manage.py runserver** and it will be visible on port 8000
+
+### Unit Tests commands
+1. Run unit tests **python -m pytest -v**
+2. Run coverage **coverage run -m pytest -v**
+3. Run coverage report **coverage report -m**
+4. Create HTML for coverage **coverage html**

@@ -4,13 +4,11 @@ import requests
 import urllib3
 from django.conf import settings
 
-# settings.configure()
-
 mainLink = settings.OMDB_LINK
 omdbKey = settings.OMDB_KEY
 
 # always add percentageSum
-videoInterest = {
+oldVideoInterest = {
     'rated': (0, 0.2),
     'director': (0, 0.3),
     'type': (0, 0.1),
@@ -24,6 +22,25 @@ videoInterest = {
     'percentageSum': 2.4
 }
 
+videoInterest = {
+    'ratedAPI': (0, 7.2),
+    'directorAPI': (0, 7.8),
+    'typeAPI': (0, 3.6),
+    'genresAPI': (1, 14.4),
+    'actorsAPI': (1, 12.0),
+    'languagesAPI': (1, 1.8),
+    'countriesAPI': (1, 1.8),
+    'productionAPI': (1, 10.8),
+    'writersAPI': (1, 9.0),
+    'runtimeAPI': (2, 3.6),
+    'imdbRatingAPI': (0, 12.0),
+    'metascoreAPI': (0, 6.0),
+    'rating': (0, 2.5),
+    'show': (0, 4.0),
+    'language': (0, 2.0),
+    'channel': (0, 0.2),
+    'channelType': (0, 1.3)
+}
 
 # we want to return name, id and poster for element variants
 def bigSearchForVideoContent(title=None):
@@ -54,12 +71,10 @@ def searchForVideoContent(imdbID=None, title=None, plotType='full'):
     parameters = urllib.parse.urlencode({'apiKey': omdbKey, searchBy[0]: searchBy[1], 'plot': plotType})
     response = requests.get(mainLink + parameters).json()
     print(response)
-    response = formatResponse(response)
-    response["Response"] = 'True'
     return None if response['Response'] == 'False' else response
 
 
-def formatResponseForInterest(response=None):
+def oldFormatResponseForInterest(response=None):
     # print(response)
     if response is None:
         raise Exception('Method needs one parameter')
@@ -72,78 +87,94 @@ def formatResponseForInterest(response=None):
         'actors': [elem.lower() for elem in response['Actors'].split(', ')],
         'languages': [elem.lower() for elem in response['Language'].split(', ')],
         'countries': [elem.lower() for elem in response['Country'].split(', ')],
+        'imdbRating': float(response['imdbRating']),
+        'metascore': float(response['Metascore']),
         'type': response['Type'],
         'production': [elem.lower() for elem in response['Production'].split(', ')]
         if response.get('Production') and response.get('Production') != 'N/A' else []
     }
 def formatResponse(response=None):
 
-    if response is None:
-        raise Exception('Method needs one parameter')
-    else:
-        imdbID = response['imdbID']
-        response = formatResponseForInterest(response)
-        response['imdbID'] = imdbID
-        return response
+    # return {
+    #     # rating, sameShow, showRating, showLanguage, sameChannel(channelName), channelType if show is found by API
+    #     # in findMovieView, add: year, genre, director, writer, actors, languages, country, imdbRating, type
+    #     'rating': response['rating'],
+    #     'show': response['show']['name'],
+    #     'language': response['show']['language'],
+    #     'channel': response['show']['channel']['name'],
+    #     'channelType': response['show']['channel']['type'],
+    #     'startTime': response['startTime'],
+    #     'endTime': response['endTime'],
+    #     'ratedAPI': response['Rated'],
+    #     'runtimeAPI': int(response['Runtime'].split(' min')[0]) if response['Runtime'] != 'N/A' else None,
+    #     'genresAPI': [elem.lower() for elem in response['Genre'].split(', ')],
+    #     'directorAPI': response['Director'] if response['Director'] != 'N/A' else [],
+    #     'writersAPI': [elem.lower() for elem in response['Writer'].split(', ') if elem != 'N/A'],
+    #     'actorsAPI': [elem.lower() for elem in response['Actors'].split(', ')],
+    #     'languagesAPI': [elem.lower() for elem in response['Language'].split(', ')],
+    #     'countriesAPI': [elem.lower() for elem in response['Country'].split(', ')],
+    #     'imdbRatingAPI': float(response['imdbRating']),
+    #     'metascoreAPI': float(response['Metascore']),
+    #     'typeAPI': response['Type'],
+    #     'productionAPI': [elem.lower() for elem in response['Production'].split(', ')]
+    #     if response.get('Production') and response.get('Production') != 'N/A' else []
+    # }
 
-def calculateVideoInterestScoreUpgraded(firstFilmList=None, secondFilmList=None):
-    if firstFilmList is None or secondFilmList is None:
+
+def calculateVideoInterestScoreUpgraded(schedule=None, watchHistory=None):
+    # first list should be the unsorted schedule, the second list the watch history
+
+    if schedule is None or watchHistory is None:
         raise Exception('Method need both parameters')
 
-    interestListScore = {}
-    for firstFilm in firstFilmList:
-        for secondFilm in secondFilmList:
+    # every entry in the schedule list will be weighted by the interest (in relation to the watchHistory)
+    scheduleListWeighted = []
+    for i in len(schedule):
+        episode = schedule[i]
+        for entry in watchHistory:
+            percentageSum = 100
+            interestValue = 0
             for key in videoInterest:
-                if key != 'percentageSum':
-                    (videoObjectType, videObjectWeight) = videoInterest[key]
-                    if videoObjectType == 0:
-                        # print(firstFilm[key])
-                        interestListScore[key] = 1 if firstFilm[key] == secondFilm[key] else 0
+                (videoObjectType, videoObjectWeight) = videoInterest[key]
+                if episode[key] is None or entry[key] is None:
+                    percentageSum -= videoObjectWeight
+                elif videoObjectType == 0:
+                    interestValue += videoObjectWeight if episode[key] == entry[key] else 0
 
-                    elif videoObjectType == 1:
-                        counter = 0
-                        for firstElem in firstFilm[key]:
-                            if firstElem in secondFilm[key]:
-                                counter += 1
+                elif videoObjectType == 1:
+                    counter = 0
+                    for firstElem in episode[key]:
+                        if firstElem in entry[key]:
+                            counter += 1
 
-                        maxLength = max(len(firstFilm[key]), len(secondFilm[key]))
-                        interestListScore[key] = 0 if maxLength == 0 else 1.0 * counter / maxLength
+                    maxLength = max(len(episode[key]), len(entry[key]))
+                    interestValue += 0 if maxLength == 0 else videoObjectWeight * counter / maxLength
 
-                    elif videoObjectType == 2:
-                        if firstFilm[key] is None or secondFilm[key] is None:
-                            interestListScore[key] = 0
-                        else:
-                            minLength = min(firstFilm[key], secondFilm[key]) * 1.0
-                            maxLength = max(firstFilm[key], secondFilm[key]) * 1.0
+                elif videoObjectType == 2:
+                    minLength = min(episode[key], entry[key]) * 1.0
+                    maxLength = max(episode[key], entry[key]) * 1.0
 
-                            interestListScore[key] = 0 if maxLength == 0 else 1.0 * minLength / maxLength
+                    interestValue += 0 if maxLength == 0 else videoObjectWeight * minLength / maxLength
 
-    interestValue = 0
-    for key in videoInterest:
-        if key != 'percentageSum':
-            (videoType, videoWeight) = videoInterest[key]
-            interestListScore[key] = round((interestListScore[key] * 100), 2)
-            interestValue += interestListScore[key] * videoWeight / videoInterest['percentageSum']
+            episodeInterest = round(interestValue / percentageSum * 100, 2)
 
-    return interestListScore, round(interestValue, 2)
+        scheduleListWeighted.append((episode, episodeInterest))
 
+    return scheduleListWeighted
 
-#filmList = bigSearchForVideoContent('alchemist')
+# filmList = bigSearchForVideoContent('alchemist')
+#
+# print(len(filmList))
+# print(filmList)
 
-#print(len(filmList))
-#print(filmList)
+# print(searchForVideoContent(title='Shadowhunters: The Mortal Instruments'))
 
-
-"""
-filmListprint(searchForVideoContent(title='Shadowhunters: The Mortal Instruments'))
-
-firstUserSearch = searchForVideoContent(title='avatar')
-secondUserSearch = searchForVideoContent(title='the last airbender')
-
-print(firstUserSearch)
-firstSearchFormatted = formatResponseForInterest(firstUserSearch)
-secondSearchFormatted = formatResponseForInterest(secondUserSearch)
-
-print(firstSearchFormatted, secondSearchFormatted)
-print(calculateVideoInterestScore([firstSearchFormatted], [secondSearchFormatted]))
-"""
+# firstUserSearch = searchForVideoContent(title='avatar')
+# secondUserSearch = searchForVideoContent(title='the last airbender')
+#
+# print(firstUserSearch)
+# firstSearchFormatted = formatResponseForInterest(firstUserSearch)
+# secondSearchFormatted = formatResponseForInterest(secondUserSearch)
+#
+# print(firstSearchFormatted, secondSearchFormatted)
+# print(calculateVideoInterestScore([firstSearchFormatted], [secondSearchFormatted]))
