@@ -8,26 +8,17 @@
 
 ### Content
 We are working on a platform that uses multiple APIs:
-> 1. smth
-> 2. smth
-> 3. smth
+> 1. movieAPI for movie recommandations with IMDB
+> 2. musicAPI for music recommandations with Spotify
+> 3. TVMaze for TV Schedule
+> 4. Indian Tv Schedule for Indian TV Schedule
 
 And we have the following utilities:
-> 1. smth
-> 2. smth
-> 3. smth
-
-### Attributions
-> 1. #### Name 
->    ###### Task
-> 1. #### Name 
->    ###### Task
-> 1. #### Name 
->    ###### Task
-> 1. #### Name 
->    ###### Task
-> 1. #### Name 
->    ###### Task
+> 1. Recommandations for movies
+> 2. Recommandations for music
+> 3. Recommandations for watch slots for TV Schedule
+> 4. Creation of personalised feed for user
+> 5. Ability to register and login to preserve watch history and other utilities
 
 ### Useful commands
 1. Create a new project **django-admin startproject projectName**
@@ -47,3 +38,10 @@ And we have the following utilities:
 >> 3. **admin.site.register(YourModel)** 
 5. To make a super user for the admin interface use **python manage.py createsuperuser**
 6. To run the project use **python manage.py runserver** and it will be visible on port 8000
+
+### Unit Tests commands
+1. **Create a superadmin user with username "test"**
+2. Run unit tests **python -m pytest -v**
+3. Run coverage **coverage run -m pytest -v**
+4. Run coverage report **coverage report -m**
+5. Create HTML for coverage **coverage html**

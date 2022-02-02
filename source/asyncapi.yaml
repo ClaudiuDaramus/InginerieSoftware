@@ -1,0 +1,111 @@
+asyncapi: 2.3.0
+info:
+  title: TeleVis
+  version: 1.0.0
+  description: |
+    A smart TV system for user-profiling and automated recommendations.
+
+    ### Check out its awesome features:
+
+    * Identify song playing on a livestream and get recommeded similar songs
+    * Authenticate using spotify 
+    *
+    *
+    *
+  license:
+    name: Django
+servers:
+  test:
+    url: RabbitMQ:8092
+    protocol: AMQP
+    description: Message broker
+    security:
+      - saslScram: []
+channels:
+  musicAPI.recognizeSong:
+    parameters:
+      streamURL:
+        $ref: '#/components/parameters/songId'
+    publish:
+      operationId: recognize
+      traits:
+        - $ref: '#/components/operationTraits/Celery'
+      message:
+        $ref: '#/components/messages/recognize'
+  musicAPI.getRecomandations:
+    parameters:
+      streetlightId:
+        $ref: '#/components/parameters/songId'
+    publish:
+      operationId: recommend
+      traits:
+        - $ref: '#/components/operationTraits/Celery'
+components:
+  messages:
+    recognize:
+      name: recognize_song
+      title: Identify playing song
+      summary: Returns title, artist and several external links of playing song
+      contentType: application/json
+      traits:
+        - $ref: '#/components/messageTraits/commonHeaders'
+      payload:
+        $ref: '#/components/schemas/songPayload'
+    recommend:
+      name: get_recommandation
+      title: Get recomandations similar to recognized song
+      summary: Returns title, artist and several external links of playing song
+      contentType: application/json
+      traits:
+        - $ref: '#/components/messageTraits/commonHeaders'
+      payload:
+        $ref: '#/components/schemas/songPayload'
+  schemas:
+    songPayload:
+      type: object
+      properties:
+        id:
+          type: number
+        title:
+          type: string
+        artist:
+          type: string
+        external_links:
+          type: object
+          properties:
+            iTunes:
+              type: string
+            apple:
+              type: string
+            shazam:
+              type: string
+        queries:
+          type: object
+          properties:
+            spotify:
+              type: string
+            deezer:
+              type: string
+  securitySchemes:
+    saslScram:
+      type: scramSha256
+      description: Provide your username and password for SASL/SCRAM authentication
+  parameters:
+    songId:
+      description: The ID of the song.
+      schema:
+        type: string
+  messageTraits:
+    commonHeaders:
+      headers:
+        type: object
+        properties:
+          url:
+            type: string
+          get-recommandations:
+            type: boolean
+  operationTraits:
+    Celery:
+      bindings:
+        Celery:
+          clientId: my-app-id

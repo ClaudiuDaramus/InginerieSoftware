@@ -1,0 +1,137 @@
+========================================================================================================= test session starts =========================================================================================================
+platform win32 -- Python 3.7.9, pytest-6.2.5, py-1.11.0, pluggy-1.0.0 -- C:\Users\duduc\Documents\Projects\Python\venvs\televis\Scripts\python.exe
+cachedir: .pytest_cache
+django: settings: source.settings (from ini)
+rootdir: C:\Users\duduc\Desktop\TeleVis\source, configfile: pytest.ini
+plugins: django-4.5.2
+collected 14 items
+
+authentication/tests.py::AuthenthicationTests::test_createNewProfile PASSED                                                                                                                                                      [  7%]
+authentication/tests.py::AuthenthicationTests::test_deleteProfile PASSED                                                                                                                                                         [ 14%]
+authentication/tests.py::AuthenthicationTests::test_getProfiles PASSED                                                                                                                                                           [ 21%]
+authentication/tests.py::AuthenthicationTests::test_login PASSED                                                                                                                                                                 [ 28%]
+authentication/tests.py::AuthenthicationTests::test_register PASSED                                                                                                                                                              [ 35%]
+authentication/tests.py::AuthenthicationTests::test_updateProfile PASSED                                                                                                                                                         [ 42%]
+movieAPI/tests.py::MovieAPITests::test_compareMovieListView PASSED                                                                                                                                                               [ 50%]
+movieAPI/tests.py::MovieAPITests::test_compareMoviesView PASSED                                                                                                                                                                  [ 57%]
+movieAPI/tests.py::MovieAPITests::test_searchForMovieView PASSED                                                                                                                                                                 [ 64%]
+tvgrid/tests.py::TVGridTests::test_functionTesting PASSED                                                                                                                                                                        [ 71%]
+tvgrid/tests.py::TVGridTests::test_updateTVSchedule PASSED                                                                                                                                                                       [ 78%]
+tvgrid/tests.py::TVGridTests::test_viewSchedule PASSED                                                                                                                                                                           [ 85%]
+watchHistory/tests.py::WatchHistoryTests::test_createAutomatedHistory PASSED                                                                                                                                                     [ 92%]
+watchHistory/tests.py::WatchHistoryTests::test_findMovieView PASSED                                                                                                                                                              [100%]
+
+========================================================================================================== warnings summary ===========================================================================================================
+authentication/tests.py::AuthenthicationTests::test_createNewProfile
+  C:\Users\duduc\Desktop\TeleVis\source\source\urls.py:23: RemovedInDjango40Warning: django.conf.urls.url() is deprecated in favor of django.urls.re_path().
+    url(r'^main/', include('baseMaster.urls')),
+
+authentication/tests.py::AuthenthicationTests::test_createNewProfile
+  C:\Users\duduc\Desktop\TeleVis\source\movieAPI\urls.py:21: RemovedInDjango40Warning: django.conf.urls.url() is deprecated in favor of django.urls.re_path().
+    url('search/', searchForMovieView, name='search'),
+
+authentication/tests.py::AuthenthicationTests::test_createNewProfile
+  C:\Users\duduc\Desktop\TeleVis\source\movieAPI\urls.py:22: RemovedInDjango40Warning: django.conf.urls.url() is deprecated in favor of django.urls.re_path().
+    url('find/', findMovieView, name='find'),
+
+authentication/tests.py::AuthenthicationTests::test_createNewProfile
+  C:\Users\duduc\Desktop\TeleVis\source\movieAPI\urls.py:23: RemovedInDjango40Warning: django.conf.urls.url() is deprecated in favor of django.urls.re_path().
+    url('compare/list/', compareMovieListView, name='compare list'),
+
+authentication/tests.py::AuthenthicationTests::test_createNewProfile
+  C:\Users\duduc\Desktop\TeleVis\source\movieAPI\urls.py:24: RemovedInDjango40Warning: django.conf.urls.url() is deprecated in favor of django.urls.re_path().
+    url('compare/', compareMoviesView, name='compare'),
+
+authentication/tests.py::AuthenthicationTests::test_createNewProfile
+  C:\Users\duduc\Desktop\TeleVis\source\movieAPI\urls.py:25: RemovedInDjango40Warning: django.conf.urls.url() is deprecated in favor of django.urls.re_path().
+    url("create/", createContent, name="create content")
+
+authentication/tests.py::AuthenthicationTests::test_createNewProfile
+  C:\Users\duduc\Desktop\TeleVis\source\source\urls.py:24: RemovedInDjango40Warning: django.conf.urls.url() is deprecated in favor of django.urls.re_path().
+    url(r'^movie/', include('movieAPI.urls')),
+
+authentication/tests.py::AuthenthicationTests::test_createNewProfile
+  C:\Users\duduc\Desktop\TeleVis\source\mapsAPI\urls.py:20: RemovedInDjango40Warning: django.conf.urls.url() is deprecated in favor of django.urls.re_path().
+    url('auth/', getMapsAuth, name='auth'),
+
+authentication/tests.py::AuthenthicationTests::test_createNewProfile
+  C:\Users\duduc\Desktop\TeleVis\source\source\urls.py:25: RemovedInDjango40Warning: django.conf.urls.url() is deprecated in favor of django.urls.re_path().
+    url(r'^maps/', include('mapsAPI.urls')),
+
+authentication/tests.py::AuthenthicationTests::test_createNewProfile
+  C:\Users\duduc\Desktop\TeleVis\source\source\urls.py:26: RemovedInDjango40Warning: django.conf.urls.url() is deprecated in favor of django.urls.re_path().
+    url(r'^admin/', admin.site.urls),
+
+authentication/tests.py::AuthenthicationTests::test_createNewProfile
+  C:\Users\duduc\Desktop\TeleVis\source\source\urls.py:27: RemovedInDjango40Warning: django.conf.urls.url() is deprecated in favor of django.urls.re_path().
+    url('api-token-auth/', views.obtain_auth_token),
+
+authentication/tests.py::AuthenthicationTests::test_createNewProfile
+  C:\Users\duduc\Desktop\TeleVis\source\authentication\urls.py:26: RemovedInDjango40Warning: django.conf.urls.url() is deprecated in favor of django.urls.re_path().
+    url('api-token-auth/', views.obtain_auth_token, name='auth'),
+
+authentication/tests.py::AuthenthicationTests::test_createNewProfile
+  C:\Users\duduc\Desktop\TeleVis\source\authentication\urls.py:27: RemovedInDjango40Warning: django.conf.urls.url() is deprecated in favor of django.urls.re_path().
+    url('register/', UserRegisterView.as_view(), name='register'),
+
+authentication/tests.py::AuthenthicationTests::test_createNewProfile
+  C:\Users\duduc\Desktop\TeleVis\source\authentication\urls.py:28: RemovedInDjango40Warning: django.conf.urls.url() is deprecated in favor of django.urls.re_path().
+    url('dummy/', dummyView, name='dummy'),
+
+authentication/tests.py::AuthenthicationTests::test_createNewProfile
+  C:\Users\duduc\Desktop\TeleVis\source\authentication\urls.py:29: RemovedInDjango40Warning: django.conf.urls.url() is deprecated in favor of django.urls.re_path().
+    url('login/', UserLoginView.as_view(), name='login'),
+
+authentication/tests.py::AuthenthicationTests::test_createNewProfile
+  C:\Users\duduc\Desktop\TeleVis\source\authentication\urls.py:30: RemovedInDjango40Warning: django.conf.urls.url() is deprecated in favor of django.urls.re_path().
+    url('create/profile/', createNewProfile, name='create-profile'),
+
+authentication/tests.py::AuthenthicationTests::test_createNewProfile
+  C:\Users\duduc\Desktop\TeleVis\source\authentication\urls.py:33: RemovedInDjango40Warning: django.conf.urls.url() is deprecated in favor of django.urls.re_path().
+    url('update/profile/', updateProfile, name='update-profile'),
+
+authentication/tests.py::AuthenthicationTests::test_createNewProfile
+  C:\Users\duduc\Desktop\TeleVis\source\authentication\urls.py:34: RemovedInDjango40Warning: django.conf.urls.url() is deprecated in favor of django.urls.re_path().
+    url('delete/profile/', deleteProfile, name='delete-profile'),
+
+authentication/tests.py::AuthenthicationTests::test_createNewProfile
+  C:\Users\duduc\Desktop\TeleVis\source\authentication\urls.py:35: RemovedInDjango40Warning: django.conf.urls.url() is deprecated in favor of django.urls.re_path().
+    url('get/fakes/', getFakeList, name='get-fake-persons'),
+
+authentication/tests.py::AuthenthicationTests::test_createNewProfile
+  C:\Users\duduc\Desktop\TeleVis\source\authentication\urls.py:36: RemovedInDjango40Warning: django.conf.urls.url() is deprecated in favor of django.urls.re_path().
+    url('location/', getUserLocation, name='get-location'),
+
+authentication/tests.py::AuthenthicationTests::test_createNewProfile
+  C:\Users\duduc\Desktop\TeleVis\source\source\urls.py:28: RemovedInDjango40Warning: django.conf.urls.url() is deprecated in favor of django.urls.re_path().
+    url(r'^auth/', include('authentication.urls')),
+
+authentication/tests.py::AuthenthicationTests::test_createNewProfile
+  C:\Users\duduc\Desktop\TeleVis\source\GridRecommendation\urls.py:24: RemovedInDjango40Warning: django.conf.urls.url() is deprecated in favor of django.urls.re_path().
+    url('get/channels/', getChannels, name='get channels'),
+
+authentication/tests.py::AuthenthicationTests::test_createNewProfile
+  C:\Users\duduc\Desktop\TeleVis\source\GridRecommendation\urls.py:25: RemovedInDjango40Warning: django.conf.urls.url() is deprecated in favor of django.urls.re_path().
+    url('get/programs/', getChannelsProgram, name='get channels program')
+
+authentication/tests.py::AuthenthicationTests::test_createNewProfile
+  C:\Users\duduc\Desktop\TeleVis\source\source\urls.py:29: RemovedInDjango40Warning: django.conf.urls.url() is deprecated in favor of django.urls.re_path().
+    url(r'^grid/', include('GridRecommendation.urls')),
+
+authentication/tests.py::AuthenthicationTests::test_createNewProfile
+  C:\Users\duduc\Desktop\TeleVis\source\tvgrid\urls.py:7: RemovedInDjango40Warning: django.conf.urls.url() is deprecated in favor of django.urls.re_path().
+    url('update/', updateTVSchedule, name='search'),
+
+
+tvgrid/tests.py::TVGridTests::test_viewSchedule
+  C:\Users\duduc\Documents\Projects\Python\venvs\televis\lib\site-packages\django\db\models\fields\__init__.py:1419: RuntimeWarning: DateTimeField Episode.startTime received a naive datetime (2022-02-02 00:00:00) while time zone sup
+port is active.
+    RuntimeWarning)
+
+tvgrid/tests.py::TVGridTests::test_viewSchedule
+  C:\Users\duduc\Documents\Projects\Python\venvs\televis\lib\site-packages\django\db\models\fields\__init__.py:1419: RuntimeWarning: DateTimeField Episode.startTime received a naive datetime (2022-02-04 00:00:00) while time zone sup
+port is active.
+    RuntimeWarning)
+
+-- Docs: https://docs.pytest.org/en/stable/warnings.html
+=================================================================================================== 14 passed, 33 warnings in 5.39s ===================================================================================================

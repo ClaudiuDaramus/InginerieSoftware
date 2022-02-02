@@ -1,5 +1,6 @@
 from rest_framework.response import Response
 from rest_framework.views import APIView
+import datetime
 
 def optionHelper(request, view, parameters):
     meta = view.metadata_class()
@@ -10,6 +11,8 @@ def optionHelper(request, view, parameters):
         data[key] = parameters[key]
     return data
 
+def fromUtcFormat(iso_str, tz=None):
+    return datetime.datetime.fromisoformat(iso_str).astimezone(tz)
 
 def getStringFromList(list, joiner=' '):
     return joiner.join(list)

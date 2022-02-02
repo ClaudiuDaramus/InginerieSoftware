@@ -1,0 +1,366 @@
+openapi: '3.0.2'
+info:
+  title: API Title
+  version: '1.0'
+servers:
+  - url: http://127.0.0.1:8000/
+paths:
+  /authentication/register/:
+    post:
+      summary: Register a new user.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                email:
+                  type: string
+                last_name:
+                  type: string
+                first_name:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '201':    
+          description: the new user
+          content:
+            application/json:
+              schema: 
+                type: object
+        '400':
+          description: Something has gone wrong
+  /authentication/login/:
+    get:
+      summary: Login.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '200':    
+          description: the token
+          content:
+            application/json:
+              schema: 
+                type: string
+        '400':
+          description: Something has gone wrong
+  /authentication/create/profile/:
+    post:
+      summary: Create a new profile.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                profileName:
+                  type: string
+      responses:
+        '201':    
+          description: the new profile
+          content:
+            application/json:
+              schema: 
+                type: object
+        '400':
+          description: Something has gone wrong
+  /authentication/get/profiles/:
+    get:
+      summary: Get Profile.
+      responses:
+        '200':    
+          description: array of profiles
+          content:
+            application/json:
+              schema: 
+                type: array
+                items: 
+                  type: object
+        '400':
+          description: Something has gone wrong
+  /authentication/update/profile/:
+    put:
+      summary: Update a profile.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                profileName:
+                  type: string
+                newProfileName:
+                  type: string
+      responses:
+        '200':    
+          description: the updated profile
+          content:
+            application/json:
+              schema: 
+                type: object
+        '400':
+          description: Something has gone wrong
+  /authentication/delete/profile/:
+    delete:
+      summary: Delete a profile.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                profileName:
+                  type: string
+      responses:
+        '200':    
+          description: the deleted profile
+          content:
+            application/json:
+              schema: 
+                type: object
+        '400':
+          description: Something has gone wrong
+  /movie/search/:
+    get:
+      summary: Searches for a movie.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+      responses:
+        '200':
+          description:  the names, ids and posters of search results
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+        '400':
+          description: Something has gone wrong
+  /movie/find/:
+    get:
+      summary: Finds a movie.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                imdbId:
+                  type: string
+      responses:
+        '200':
+          description:  the name, id and poster of find result
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          description: Something has gone wrong
+  /movie/compare/list/:
+    get:
+      summary: Sends recommended list of movies sorted by interest score.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                firstList:
+                  type: array
+                  items:
+                    type: object
+                firstIdList:
+                  type: array
+                  items:
+                    type: object
+                secondList:
+                  type: array
+                  items:
+                    type: object
+                secondIdList:
+                  type: array
+                  items:
+                    type: object
+      responses:
+        '200':
+          description:  Array of movies sorted by interest
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+        '400':
+          description: Something has gone wrong
+  /movie/compare/:
+    get:
+      summary: Calculate interest for send movies.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                firstTitle:
+                  type: string
+                firstImdbId:
+                 type: string
+                secondTitle:
+                  type: string
+                secondImdbId:
+                  type: string
+      responses:
+        '200':
+          description:  Array of movies sorted by interest
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+        '400':
+          description: Something has gone wrong
+  /tvgrid/update/:
+    get:
+      summary: Update TV Grid.
+      responses:
+        '200':    
+          description: updated array of shows
+          content:
+            application/json:
+              schema: 
+                type: array
+                items: 
+                    type: object
+        '400':
+          description: Something has gone wrong
+  /tvgrid/test/:
+    get:
+      summary: Test TV Grid Functionality.
+      responses:
+        '200':    
+          description: Functionality works
+        '400':
+          description: Something has gone wrong
+  /tvgrid/recommend/:
+    get:
+      summary: Get Recommended TV Grid.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                profileName:
+                  type: string
+      responses:
+        '200':    
+          description:  array of best recommended shows 
+          content:
+            application/json:
+              schema: 
+                type: array
+                items: 
+                    type: object
+        '400':
+          description: Something has gone wrong
+  /watchHistory/create/:
+    get:
+      summary: Create a Watch History.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                isLiked:
+                  type: string
+                type:
+                  type: string
+                profileName:
+                  type: string
+                externalId:
+                  type: string
+      responses:
+        '200':    
+          description: the watch history object for the properties
+          content:
+            application/json:
+              schema: 
+                type: object
+        '400':
+          description: Something has gone wrong
+  /watchHistory/create/automated/:
+    get:
+      summary: Create a Watch History Automatically.
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                profileName:
+                  type: string
+
+      responses:
+        '200':    
+          description: the watch history object for default properties
+          content:
+            application/json:
+              schema: 
+                type: object
+        '400':
+          description: Something has gone wrong
+  /musicAPI/get-auth-url/:
+    get:
+      summary: Get tha auth url for the Spotify API.
+      responses:
+        '200':    
+          description: the auth url for the Spotify API
+          content:
+            application/json:
+              schema: 
+                type: string
+  /musicAPI/is-authenticated/:
+    get:
+      summary: Check if you are authenticated into Spotify API.
+      responses:
+        '200':    
+          description: the auth token for the Spotify API
+          content:
+            application/json:
+              schema: 
+                type: string
+        '400':
+          description: No token found

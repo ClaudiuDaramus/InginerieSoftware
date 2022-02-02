@@ -11,6 +11,11 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 import logging
 from pathlib import Path
+from .static import channels, recommendationSettings, userHistory
+
+CHANNELS = channels
+RECOMMENDATION_SETTINGS = recommendationSettings
+USER_HIST = userHistory
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -39,13 +44,17 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework.authtoken',
     'rest_framework',
+    'rest_framework_swagger',
     'baseMaster',
     'movieAPI',
     'musicAPI',
     'teleGridAPI',
     'authentication',
     'mapsAPI',
-    'activitiesAPI'
+    'activitiesAPI',
+    'GridRecommendation',
+    'tvgrid',
+    'watchHistory'
 ]
 
 MIDDLEWARE = [
@@ -114,7 +123,8 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.BasicAuthentication',
         'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.TokenAuthentication',
-        'authentication.auth.TokenAuthSupportCookie'
+        'authentication.auth.TokenAuthSupportCookie',
+        'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
     ],
 }
 
@@ -166,3 +176,11 @@ LOGGING = {
 }
 
 LOGGER = logging.getLogger('django')
+
+INDIAN_TV_SCHEDULE_HOST = "indian-tv-schedule.p.rapidapi.com"
+INDIAN_TV_SCHEDULE_KEY = "92efc58950msh3ba84d45c0ebccfp11e31cjsn09a9ed7db497"
+INDIAN_TV_SCHEDULE_LINK = "https://indian-tv-schedule.p.rapidapi.com/"
+
+TV_MAZE_LINK = "https://api.tvmaze.com/"
+
+# https://www.episodate.com/api/most-popular
