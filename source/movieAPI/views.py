@@ -5,6 +5,7 @@ from django.http import JsonResponse
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 
+from tvgrid.recommandationHelper import WeightedIntervalScheduling
 from .movieManager import bigSearchForVideoContent, formatResponseForInterest, searchForVideoContent, \
     calculateVideoInterestScoreUpgraded
 
@@ -57,49 +58,40 @@ def compareMoviesView(request):
         return JsonResponse({'error': str(e)})
 
 
-@api_view(['GET'])
-@permission_classes([IsAuthenticated])
-def compareMovieListView(request):
-    firstMovieList = request.GET.get('firstList')
-    firstMovieList = None if firstMovieList is None else firstMovieList.split(',')
-    firstMovieIDList = request.GET.get('firstIdList')
-    firstMovieIDList = None if firstMovieIDList is None else firstMovieIDList.split(',')
-    secondMovieList = request.GET.get('secondList')
-    secondMovieList = None if secondMovieList is None else secondMovieList.split(',')
-    secondMovieIDList = request.GET.get('secondIdList')
-    secondMovieIDList = None if secondMovieIDList is None else secondMovieIDList.split(',')
+# Find the latest job (in sorted array) that
+# doesn't conflict with the job[i]. If there
+# is no compatible job, then it returns -1
+def latestNonConflict(arr, i):
+    for j in range(i - 1, -1, -1):
+        if arr[j][0]["endTime"] <= arr[i - 1][0]["startTime"]:
+            return j
 
-    try:
-        if firstMovieList is not None:
-            firstMovieList = [searchForVideoContent(title=movie) for movie in firstMovieList]
-        else:
-            firstMovieList = []
+    return -1
 
-        if firstMovieIDList is not None:
-            for movieID in firstMovieIDList:
-                firstMovieList.append(searchForVideoContent(imdbID=movieID))
 
-        if secondMovieList is not None:
-            secondMovieList = [searchForVideoContent(title=movie) for movie in secondMovieList]
-        else:
-            secondMovieList = []
+# A recursive function that returns the
+# maximum possible profit from given
+# array of jobs. The array of jobs must
+# be sorted according to finish time
+def findMaxProfitRec(scheduleListWeighted, n, scheduleList=[]):
+    # pass scheduleListWeighted from compareMovieListView
+    # originally, n = len(compareMovieListViewResult['results'])
+    # entry = scheduleListWeighted[X][0], entryInterest = scheduleListWeighted[X][1]
 
-        if secondMovieIDList is not None:
-            for movieID in secondMovieIDList:
-                secondMovieList.append(searchForVideoContent(imdbID=movieID))
+    # Base case
+    if n == 1:
+        scheduleList.append(scheduleListWeighted[n - 1][0])
+        return scheduleListWeighted[n - 1][1]
 
-        # elem1 = [movie['Runtime'] for movie in firstMovieList]
-        # elem2 = [movie['Runtime'] for movie in secondMovieList]
-        # print(elem1)
-        # print(elem2)
+    # Find profit when current job is included
+    inclProf = scheduleListWeighted[n - 1][1]
+    i = latestNonConflict(scheduleListWeighted, n)
 
-        firstMovieList = [formatResponseForInterest(movie) for movie in firstMovieList]
-        secondMovieList = [formatResponseForInterest(movie) for movie in secondMovieList]
-        print(firstMovieList, secondMovieList)
-        # firstMovieList should be the schedule received from url('schedule/', viewSchedule, name='schedule') in tvgrid
-        # secondMovieList should be the watchHistory, for now use a dummy one
-        interest = calculateVideoInterestScoreUpgraded(firstMovieList, secondMovieList)
-        return JsonResponse({'results': interest})
+    if i != -1:
+        inclProf += findMaxProfitRec(scheduleListWeighted, i + 1)
 
-    except Exception as e:
-        return JsonResponse({'error': str(e)})
+    # Find profit when current job is excluded
+    exclProf = findMaxProfitRec(scheduleListWeighted, n - 1)
+    return max(inclProf, exclProf)
+
+

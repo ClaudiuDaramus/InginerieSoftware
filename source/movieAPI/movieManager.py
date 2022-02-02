@@ -24,20 +24,22 @@ oldVideoInterest = {
 
 videoInterest = {
     'ratedAPI': (0, 7.2),
-    'directorAPI': (0, 10.8),
+    'directorAPI': (0, 7.8),
     'typeAPI': (0, 3.6),
     'genresAPI': (1, 14.4),
-    'actorsAPI': (1, 18.0),
+    'actorsAPI': (1, 12.0),
     'languagesAPI': (1, 1.8),
     'countriesAPI': (1, 1.8),
     'productionAPI': (1, 10.8),
-    'writersAPI': (1, 18.0),
+    'writersAPI': (1, 9.0),
     'runtimeAPI': (2, 3.6),
+    'imdbRatingAPI': (0, 12.0),
+    'metascoreAPI': (0, 6.0),
     'rating': (0, 2.5),
     'show': (0, 4.0),
     'language': (0, 2.0),
     'channel': (0, 0.2),
-    'channelType': (0, 1.3),
+    'channelType': (0, 1.3)
 }
 
 
@@ -86,38 +88,37 @@ def oldFormatResponseForInterest(response=None):
         'actors': [elem.lower() for elem in response['Actors'].split(', ')],
         'languages': [elem.lower() for elem in response['Language'].split(', ')],
         'countries': [elem.lower() for elem in response['Country'].split(', ')],
+        'imdbRating': float(response['imdbRating']),
+        'metascore': float(response['Metascore']),
         'type': response['Type'],
         'production': [elem.lower() for elem in response['Production'].split(', ')]
         if response.get('Production') and response.get('Production') != 'N/A' else []
     }
 
-
-def formatResponseForInterest(response=None):
-    # print(response)
-    if response is None:
-        raise Exception('Method needs one parameter')
-    return {
-        # rating, sameShow, showRating, showLanguage, sameChannel(channelName), channelType if show is found by API
-        # in findMovieView, add: year, genre, director, writer, actors, languages, country, imdbRating, type
-        'rating': response['rating'],
-        'show': response['show']['name'],
-        'language': response['show']['language'],
-        'channel': response['show']['channel']['name'],
-        'channelType': response['show']['channel']['type'],
-        'ratedAPI': response['Rated'],
-        'runtimeAPI': int(response['Runtime'].split(' min')[0]) if response['Runtime'] != 'N/A' else None,
-        'genresAPI': [elem.lower() for elem in response['Genre'].split(', ')],
-        'directorAPI': response['Director'] if response['Director'] != 'N/A' else [],
-        'writersAPI': [elem.lower() for elem in response['Writer'].split(', ') if elem != 'N/A'],
-        'actorsAPI': [elem.lower() for elem in response['Actors'].split(', ')],
-        'languagesAPI': [elem.lower() for elem in response['Language'].split(', ')],
-        'countriesAPI': [elem.lower() for elem in response['Country'].split(', ')],
-        'imdbRatingAPI': float(response['imdbRating']),
-        'metascoreAPI': float(response['Metascore']),
-        'typeAPI': response['Type'],
-        'productionAPI': [elem.lower() for elem in response['Production'].split(', ')]
-        if response.get('Production') and response.get('Production') != 'N/A' else []
-    }
+    # return {
+    #     # rating, sameShow, showRating, showLanguage, sameChannel(channelName), channelType if show is found by API
+    #     # in findMovieView, add: year, genre, director, writer, actors, languages, country, imdbRating, type
+    #     'rating': response['rating'],
+    #     'show': response['show']['name'],
+    #     'language': response['show']['language'],
+    #     'channel': response['show']['channel']['name'],
+    #     'channelType': response['show']['channel']['type'],
+    #     'startTime': response['startTime'],
+    #     'endTime': response['endTime'],
+    #     'ratedAPI': response['Rated'],
+    #     'runtimeAPI': int(response['Runtime'].split(' min')[0]) if response['Runtime'] != 'N/A' else None,
+    #     'genresAPI': [elem.lower() for elem in response['Genre'].split(', ')],
+    #     'directorAPI': response['Director'] if response['Director'] != 'N/A' else [],
+    #     'writersAPI': [elem.lower() for elem in response['Writer'].split(', ') if elem != 'N/A'],
+    #     'actorsAPI': [elem.lower() for elem in response['Actors'].split(', ')],
+    #     'languagesAPI': [elem.lower() for elem in response['Language'].split(', ')],
+    #     'countriesAPI': [elem.lower() for elem in response['Country'].split(', ')],
+    #     'imdbRatingAPI': float(response['imdbRating']),
+    #     'metascoreAPI': float(response['Metascore']),
+    #     'typeAPI': response['Type'],
+    #     'productionAPI': [elem.lower() for elem in response['Production'].split(', ')]
+    #     if response.get('Production') and response.get('Production') != 'N/A' else []
+    # }
 
 
 def calculateVideoInterestScoreUpgraded(schedule=None, watchHistory=None):
