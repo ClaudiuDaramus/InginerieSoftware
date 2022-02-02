@@ -49,7 +49,8 @@ And we have the following utilities:
 6. To run the project use **python manage.py runserver** and it will be visible on port 8000
 
 ### Unit Tests commands
-1. Run unit tests **python -m pytest -v**
-2. Run coverage **coverage run -m pytest -v**
-3. Run coverage report **coverage report -m**
-4. Create HTML for coverage **coverage html**
+1. **Create a superadmin user with username "test"**
+2. Run unit tests **python -m pytest -v**
+3. Run coverage **coverage run -m pytest -v**
+4. Run coverage report **coverage report -m**
+5. Create HTML for coverage **coverage html**
