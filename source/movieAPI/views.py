@@ -96,6 +96,8 @@ def compareMovieListView(request):
         firstMovieList = [formatResponseForInterest(movie) for movie in firstMovieList]
         secondMovieList = [formatResponseForInterest(movie) for movie in secondMovieList]
         print(firstMovieList, secondMovieList)
+        # firstMovieList should be the schedule received from url('schedule/', viewSchedule, name='schedule') in tvgrid
+        # secondMovieList should be the watchHistory, for now use a dummy one
         interest = calculateVideoInterestScoreUpgraded(firstMovieList, secondMovieList)
         return JsonResponse({'results': interest})
 

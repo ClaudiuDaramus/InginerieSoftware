@@ -92,7 +92,7 @@ def getScheduleEpisodes():
     todayDatetime = datetime.combine(datetime.today(), datetime.min.time())
     print(todayDatetime, todayDatetime + timedelta(days=2))
     episodes = Episode.objects.filter(startTime__gte=todayDatetime, startTime__lte=todayDatetime + timedelta(days=2)) \
-        .order_by('startTime', 'endTime')
+        .order_by('endTime', 'startTime')
     return [episode.getJSONVariant() for episode in episodes]
 
 @api_view(['GET'])

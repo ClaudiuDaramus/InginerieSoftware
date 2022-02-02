@@ -8,7 +8,7 @@ mainLink = settings.OMDB_LINK
 omdbKey = settings.OMDB_KEY
 
 # always add percentageSum
-videoInterest = {
+oldVideoInterest = {
     'rated': (0, 0.2),
     'director': (0, 0.3),
     'type': (0, 0.1),
@@ -20,6 +20,24 @@ videoInterest = {
     'writers': (1, 0.5),
     'runtime': (2, 0.1),
     'percentageSum': 2.4
+}
+
+videoInterest = {
+    'ratedAPI': (0, 7.2),
+    'directorAPI': (0, 10.8),
+    'typeAPI': (0, 3.6),
+    'genresAPI': (1, 14.4),
+    'actorsAPI': (1, 18.0),
+    'languagesAPI': (1, 1.8),
+    'countriesAPI': (1, 1.8),
+    'productionAPI': (1, 10.8),
+    'writersAPI': (1, 18.0),
+    'runtimeAPI': (2, 3.6),
+    'rating': (0, 2.5),
+    'show': (0, 4.0),
+    'language': (0, 2.0),
+    'channel': (0, 0.2),
+    'channelType': (0, 1.3),
 }
 
 
@@ -102,46 +120,46 @@ def formatResponseForInterest(response=None):
     }
 
 
-def calculateVideoInterestScoreUpgraded(firstFilmList=None, secondFilmList=None):
-    if firstFilmList is None or secondFilmList is None:
+def calculateVideoInterestScoreUpgraded(schedule=None, watchHistory=None):
+    # first list should be the unsorted schedule, the second list the watch history
+
+    if schedule is None or watchHistory is None:
         raise Exception('Method need both parameters')
 
-    interestListScore = {}
-    for firstFilm in firstFilmList:
-        for secondFilm in secondFilmList:
+    # every entry in the schedule list will be weighted by the interest (in relation to the watchHistory)
+    scheduleListWeighted = []
+    for i in len(schedule):
+        episode = schedule[i]
+        for entry in watchHistory:
+            percentageSum = 100
+            interestValue = 0
             for key in videoInterest:
-                if key != 'percentageSum':
-                    (videoObjectType, videObjectWeight) = videoInterest[key]
-                    if videoObjectType == 0:
-                        # print(firstFilm[key])
-                        interestListScore[key] = 1 if firstFilm[key] == secondFilm[key] else 0
+                (videoObjectType, videoObjectWeight) = videoInterest[key]
+                if episode[key] is None or entry[key] is None:
+                    percentageSum -= videoObjectWeight
+                elif videoObjectType == 0:
+                    interestValue += videoObjectWeight if episode[key] == entry[key] else 0
 
-                    elif videoObjectType == 1:
-                        counter = 0
-                        for firstElem in firstFilm[key]:
-                            if firstElem in secondFilm[key]:
-                                counter += 1
+                elif videoObjectType == 1:
+                    counter = 0
+                    for firstElem in episode[key]:
+                        if firstElem in entry[key]:
+                            counter += 1
 
-                        maxLength = max(len(firstFilm[key]), len(secondFilm[key]))
-                        interestListScore[key] = 0 if maxLength == 0 else 1.0 * counter / maxLength
+                    maxLength = max(len(episode[key]), len(entry[key]))
+                    interestValue += 0 if maxLength == 0 else videoObjectWeight * counter / maxLength
 
-                    elif videoObjectType == 2:
-                        if firstFilm[key] is None or secondFilm[key] is None:
-                            interestListScore[key] = 0
-                        else:
-                            minLength = min(firstFilm[key], secondFilm[key]) * 1.0
-                            maxLength = max(firstFilm[key], secondFilm[key]) * 1.0
+                elif videoObjectType == 2:
+                    minLength = min(episode[key], entry[key]) * 1.0
+                    maxLength = max(episode[key], entry[key]) * 1.0
 
-                            interestListScore[key] = 0 if maxLength == 0 else 1.0 * minLength / maxLength
+                    interestValue += 0 if maxLength == 0 else videoObjectWeight * minLength / maxLength
 
-    interestValue = 0
-    for key in videoInterest:
-        if key != 'percentageSum':
-            (videoType, videoWeight) = videoInterest[key]
-            interestListScore[key] = round((interestListScore[key] * 100), 2)
-            interestValue += interestListScore[key] * videoWeight / videoInterest['percentageSum']
+            episodeInterest = round(interestValue / percentageSum * 100, 2)
 
-    return interestListScore, round(interestValue, 2)
+        scheduleListWeighted.append((episode, episodeInterest))
+
+    return scheduleListWeighted
 
 # filmList = bigSearchForVideoContent('alchemist')
 #
