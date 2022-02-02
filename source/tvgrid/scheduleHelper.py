@@ -5,7 +5,7 @@ from .serializers import EpisodeSerializer, getOrCreateSimpleBulk, createOrUpdat
     ShowSerializer
 
 
-def formatResponseForInterest(response=None, episodeId=None):
+def formatResponseForInterest(response=None, episode=None):
     # print(response)
     if response is None:
         raise Exception('Method needs one parameter')
@@ -15,8 +15,7 @@ def formatResponseForInterest(response=None, episodeId=None):
         content = oldFormat.pop(key)
         oldFormat[key + "API"] = content
 
-    if episodeId is not None:
-        episode = Episode.objects.get(id=episodeId).getJSONVariant()
+    if episode is not None:
         oldFormat.update({
             'rating': episode['rating'],
             'show': episode['show']['name'],
@@ -42,7 +41,7 @@ def updateTVScheduleObject(schedule):
     show = schedule['show']
 
     # they already are in the database
-    getOrCreateSimpleBulk(Genre, show['genres'])
+    # getOrCreateSimpleBulk(Genre, show['genres'])
 
     channel = show['channel']
     channelObject = createOrUpdateBasic(ChannelSerializer, channel, (True, False))
@@ -53,6 +52,6 @@ def updateTVScheduleObject(schedule):
     # print('Show id %s' % showObject.id)
     # print(showObject)
     schedule['show'] = showObject
-    episodeObject = createOrUpdateBasic(EpisodeSerializer, schedule, (True, True), ['show'])
+    episodeObject = createOrUpdateBasic(EpisodeSerializer, schedule, (True, False), ['show'])
 
     return episodeObject.getJSONVariant()

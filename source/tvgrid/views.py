@@ -13,7 +13,8 @@ from .tvGridManager import tvManager
 from movieAPI.movieManager import searchForVideoContent, calculateVideoInterestScoreUpgraded
 from .recommandationHelper import WeightedIntervalScheduling
 from .scheduleHelper import formatResponseForInterest
-
+from watchHistory.models import WatchHistory
+from authentication.models import Profile
 
 def renderTVScheduleObjects():
     processedScheduleList = tvManager.processedList()
@@ -45,52 +46,44 @@ def functionTesting(request):
 @permission_classes([IsAdminUser])
 def viewSchedule(request):
     episodes = getScheduleEpisodes()
-
     return Response({"result": episodes}, )
 
+
+def searchableShowContent(jsonList):
+    watchHistoryDict = {}
+    for index, watched in enumerate(jsonList):
+        watchHistoryDict[watched['id']] = (searchForVideoContent(title=watched['show']['name']), index)
+
+    for key in watchHistoryDict:
+        if watchHistoryDict.get(key)[0] is None:
+            watchHistoryDict.pop(key)
+
+    return watchHistoryDict
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def compareMovieListView(request):
-    firstMovieList = request.GET.get('firstList')
-    firstMovieList = None if firstMovieList is None else firstMovieList.split(',')
-    firstMovieIDList = request.GET.get('firstIdList')
-    firstMovieIDList = None if firstMovieIDList is None else firstMovieIDList.split(',')
-    secondMovieList = request.GET.get('secondList')
-    secondMovieList = None if secondMovieList is None else secondMovieList.split(',')
-    secondMovieIDList = request.GET.get('secondIdList')
-    secondMovieIDList = None if secondMovieIDList is None else secondMovieIDList.split(',')
+
+    profileName = request.GET.get("profileName")
+    if profileName is None:
+        return JsonResponse({"errors": "You need to complete the profile name parameter"})
+    # get Profile using profile obj and name from request
+    profile = Profile.objects.filter(profileName=profileName).filter(user__id=request.user.id).first()
+    watchHistory = WatchHistory.objects.filter(profile__id=profile.id).all()
+    watchHistory = Episode.objects.filter(id__in=[watched.externalId for watched in watchHistory]).all()
+    watchHistory = [watched.getJSONVariant() for watched in watchHistory]
+    episodes = getScheduleEpisodes()
+
+    watchHistoryDict = searchableShowContent(watchHistory)
+    episodeDict = searchableShowContent(episodes)
+
+
 
     try:
-        if firstMovieList is not None:
-            firstMovieList = [searchForVideoContent(title=movie) for movie in firstMovieList]
-        else:
-            firstMovieList = []
+        watchHistoryList = [formatResponseForInterest(watchHistoryDict[key][0], watchHistory[watchHistoryDict[key][1]]) for key in watchHistoryDict]
+        episodeList = [formatResponseForInterest(episodeDict[key][0], episodes[episodeDict[key][1]]) for key in episodeDict]
 
-        if firstMovieIDList is not None:
-            for movieID in firstMovieIDList:
-                firstMovieList.append(searchForVideoContent(imdbID=movieID))
-
-        if secondMovieList is not None:
-            secondMovieList = [searchForVideoContent(title=movie) for movie in secondMovieList]
-        else:
-            secondMovieList = []
-
-        if secondMovieIDList is not None:
-            for movieID in secondMovieIDList:
-                secondMovieList.append(searchForVideoContent(imdbID=movieID))
-
-        # elem1 = [movie['Runtime'] for movie in firstMovieList]
-        # elem2 = [movie['Runtime'] for movie in secondMovieList]
-        # print(elem1)
-        # print(elem2)
-
-        firstMovieList = [formatResponseForInterest(movie) for movie in firstMovieList]
-        secondMovieList = [formatResponseForInterest(movie) for movie in secondMovieList]
-        # print(firstMovieList, secondMovieList)
-        # firstMovieList should be the schedule received from url('schedule/', viewSchedule, name='schedule') in tvgrid
-        # secondMovieList should be the watchHistory, for now use a dummy one
-        scheduleListWeighted = calculateVideoInterestScoreUpgraded(firstMovieList, secondMovieList)
+        scheduleListWeighted = calculateVideoInterestScoreUpgraded(watchHistoryList, episodeList)
         # scheduleListWeighted has tuples of all the entries from the schedule received paired with their respective
         # interest
 

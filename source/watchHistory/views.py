@@ -1,47 +1,17 @@
-import rest_framework.decorators
-from django.shortcuts import render
-
 # Create your views here.
 # -*- coding: utf-8 -*-
-import base64
-import hashlib
-import hmac
-import json
-import os
-from uuid import uuid4
 
-import requests
-from django.contrib.auth import authenticate
+from random import choices
 
-from django.http import HttpResponse, JsonResponse, HttpResponseRedirect
-from django.conf import settings
-from django.views.decorators.csrf import csrf_exempt
-
-from rest_framework.authentication import BasicAuthentication, SessionAuthentication, TokenAuthentication
-from rest_framework.authtoken.models import Token
-
-from django.shortcuts import render, get_object_or_404, get_list_or_404
-
-from rest_framework.decorators import api_view, permission_classes
-from django.contrib.auth.decorators import login_required
-
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework.renderers import BrowsableAPIRenderer
-from rest_framework.decorators import renderer_classes
-from rest_framework import generics
-from rest_framework import mixins
-from rest_framework.settings import api_settings
-
-from rest_framework import status
-
-from rest_framework.permissions import IsAdminUser, IsAuthenticated, AllowAny
-from django.contrib.auth.models import User
-from .models import *
 from authentication.models import Profile
-from random import randint, choices
-from .watchHistoryManager import addWatchHistory
+from django.http import JsonResponse
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from tvgrid.models import *
+
+from .watchHistoryManager import addWatchHistory
+
+
 @api_view(["GET"])
 @permission_classes([AllowAny])
 def createHistory(request):
@@ -60,20 +30,23 @@ def createHistory(request):
     profile = Profile.objects.filter(profileName=profileName).filter(user__id=request.user.id).first()
     externalId = request.GET.get("externalId", 0)
     if profile is None:
-        return JsonResponse({"error":"There is no profile with this name"})
-    history = addWatchHistory(isLiked = isLiked, type = type, profile = profile, externalId = externalId )
+        return JsonResponse({"error": "There is no profile with this name"})
+    history = addWatchHistory(isLiked=isLiked, type=type, profile=profile, externalId=externalId)
     return JsonResponse(history.getJSONVariant())
+
 
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
 def createAutomatedHistory(request):
- episodes = Episode.objects.all()
- episodesId = [episode.id for episode in episodes]
- episodesId= choices(episodesId, k=20)
- return JsonResponse({"results":episodesId})
+    profileName = request.GET.get("profileName", "default")
+    print(request.user)
+    profile = Profile.objects.filter(profileName=profileName, user=request.user).first()
 
-@api_view(["GET"])
-@permission_classes([IsAuthenticated])
-def findProfile(request):
-    profileName = request.GET.get("default ")
-    return JsonResponse(profileName.getJsonVariant())
+    if profile is None:
+        return JsonResponse({"errors": "There is no profile"})
+
+    episodes = Episode.objects.all()
+    episodesId = [episode.id for episode in episodes]
+    print(episodesId)
+    episodesId = choices(episodesId, k=20)
+    return JsonResponse({"results": episodesId})

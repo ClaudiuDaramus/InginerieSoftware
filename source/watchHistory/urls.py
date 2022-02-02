@@ -19,6 +19,6 @@ from django.urls import include, path
 from rest_framework.authtoken import views
 
 urlpatterns = [
-    url("create/automated/", createAutomatedHistory, name="create history automated"),
+    url("^create/automated/$", createAutomatedHistory, name="create history automated"),
     url("create/", createHistory, name="create history"),
 ]

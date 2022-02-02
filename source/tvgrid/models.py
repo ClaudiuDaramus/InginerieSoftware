@@ -77,6 +77,7 @@ class Episode(models.Model):
 
     def getJSONVariant(self):
         return {
+            'id': self.id,
             'externalId': self.externalId,
             'name': self.name,
             'season': self.season,
